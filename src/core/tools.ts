@@ -1,12 +1,15 @@
-import { generateKeypair, keypairToJwk } from "@agentcommercekit/keys"
-import { hexStringToBytes } from "@agentcommercekit/keys/encoding"
+import {
+  generateKeypair,
+  hexStringToBytes,
+  keypairToJwk
+} from "agentcommercekit"
 import * as jose from "jose"
 import { tool, ToolBase } from "tool-adapters"
 import { z } from "zod"
 
 export interface IdentityToolkitConfig {
-  passkey: string
-  passkeyId: string
+  clientId: string
+  clientSecret: string
 }
 
 const verifyResponseSchema = z.object({
@@ -23,7 +26,7 @@ async function completeVerification(
 
   const keypair = await generateKeypair(
     "Ed25519",
-    hexStringToBytes(config.passkey)
+    hexStringToBytes(config.clientSecret)
   )
 
   const joseKeypair = await jose.importJWK(
@@ -34,7 +37,7 @@ async function completeVerification(
   const jwt = await new jose.SignJWT(payloadToSign)
     .setProtectedHeader({
       alg: "Ed25519",
-      kid: config.passkeyId
+      kid: config.clientId
     })
     .sign(joseKeypair)
 

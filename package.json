@@ -51,6 +51,7 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
+    "agentcommercekit": "^0.3.0",
     "ai": "^4.3.16",
     "jose": "^6.0.11",
     "tool-adapters": "^0.0.2",
