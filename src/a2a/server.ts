@@ -58,7 +58,7 @@ export class AckHubServerSdk {
         throw new Error("Invalid issuer")
       }
 
-      // TODO - how will maintaining state work in a serverless context?
+      // Will need to extend this mechanism to support a serverless context
       if (!this.authenticatedClients.has(clientDid)) {
         return {
           jsonrpc: "2.0",
@@ -67,7 +67,7 @@ export class AckHubServerSdk {
         }
       }
     } catch (error) {
-      // TODO - there are a lot of reasons this could have failed.
+      // There are a lot of reasons this verification could have failed.
       // We might want to refactor this to better indicate what went wrong
       console.error(error)
       return {
@@ -130,9 +130,6 @@ export class AckHubServerSdk {
       return
     }
 
-    // TODO - we should probably have the challenge itself be signed by our server, so
-    // a bad actor doesn't spam endpoints with verification requests that then overload
-    // our server.
     const { verificationChallenge } = part.data
 
     let success = true

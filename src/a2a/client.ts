@@ -33,8 +33,6 @@ export class AckHubClientSdk {
 
     const authResponse = await a2aClient.sendTask(identityParams)
 
-    console.log(JSON.stringify(authResponse, null, 2))
-
     const { did } = await this.apiClient.getAgentMetadata()
 
     const { nonce: serverNonce } = await verifyA2AHandshakeMessage(
