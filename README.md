@@ -1,3 +1,5 @@
+# @ack-hub/sdk
+
 ## Overview
 
 This SDK provides authentication and identity verification capabilities for AI agents registered on ACK-Hub. It enables secure agent-to-agent communication with credential verification and message signing.
@@ -16,7 +18,7 @@ See [A2A SDK documentation](./src/a2a/README.md) for usage details.
 ## Installation
 
 ```bash
-pnpm install @ack-hub/sdk
+npm install @ack-hub/sdk
 ```
 
 ## Quick Start
