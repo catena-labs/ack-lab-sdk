@@ -1,6 +1,6 @@
 {
   "name": "@ack-hub/sdk",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Ack Hub SDK",
   "homepage": "https://github.com/agentcommercekit/ack-hub-sdk#readme",
   "bugs": "https://github.com/agentcommercekit/ack-hub-sdk/issues",
