@@ -14,6 +14,7 @@ import type {
 } from "a2a-js"
 import type { AckHubSdkConfig } from "../types"
 import { ApiClient } from "../api-client"
+import { verifyCredential } from "../utils/verify-credential"
 
 type VerificationPart = Omit<DataPart, "data"> & {
   data: {
@@ -27,11 +28,12 @@ function isVerificationPart(part: Part): part is VerificationPart {
 
 export class AckHubServerSdk {
   private authenticatedClients = new Set<string>()
-
   private apiClient: ApiClient
+  private config: AckHubSdkConfig
 
   constructor(config: AckHubSdkConfig) {
     this.apiClient = new ApiClient(config)
+    this.config = config
   }
 
   async handleRequest(
@@ -91,17 +93,29 @@ export class AckHubServerSdk {
     request: SendMessageRequest
   ): Promise<SendMessageResponse> {
     try {
-      const { did } = await this.apiClient.getAgentMetadata()
+      const { did, vc } = await this.apiClient.getAgentMetadata()
 
-      const { nonce: clientNonce, iss: clientDid } =
-        await verifyA2AHandshakeMessage(request.params.message, {
-          did
-        })
+      const {
+        nonce: clientNonce,
+        iss: clientDid,
+        vc: clientVc
+      } = await verifyA2AHandshakeMessage(request.params.message, {
+        did
+      })
+
+      await verifyCredential(clientVc, {
+        trustedIssuers: this.config.trustedIssuers,
+        trustedAgentControllers: this.config.trustedAgentControllers
+      })
 
       // We need to verify the client here
       this.authenticatedClients.add(clientDid)
 
-      const payload = createA2AHandshakePayload(clientDid, clientNonce)
+      const payload = createA2AHandshakePayload({
+        recipient: clientDid,
+        requestNonce: clientNonce,
+        vc
+      })
 
       const { jwt } = await this.apiClient.sign(payload)
 

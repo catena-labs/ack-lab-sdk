@@ -3,11 +3,15 @@ import {
   hexStringToBytes,
   keypairToJwk
 } from "agentcommercekit"
-import { didUriSchema } from "agentcommercekit/schemas/valibot"
+import {
+  credentialSchema,
+  didUriSchema
+} from "agentcommercekit/schemas/valibot"
 import * as jose from "jose"
 import { stringify } from "safe-stable-stringify"
 import * as v from "valibot"
-import type { AckHubSdkConfig } from "./types"
+import type { ApiClientConfig } from "./types"
+
 import { sha256 } from "./utils/sha-256"
 
 export interface RequestOptions {
@@ -26,7 +30,8 @@ const apiResponseSchema = v.variant("ok", [
 ])
 
 const agentMetadataSchema = v.object({
-  did: didUriSchema
+  did: didUriSchema,
+  vc: credentialSchema
 })
 
 type AgentMetadata = v.InferOutput<typeof agentMetadataSchema>
@@ -38,8 +43,8 @@ export class ApiClient {
 
   private _metadata: AgentMetadata | undefined = undefined
 
-  constructor({ baseUrl, clientId, clientSecret }: AckHubSdkConfig) {
-    this.baseUrl = baseUrl
+  constructor({ baseUrl, clientId, clientSecret }: ApiClientConfig) {
+    this.baseUrl = baseUrl ?? "https://api.ack-hub.com"
     this.clientId = clientId
     this.clientSecret = clientSecret
   }
@@ -76,7 +81,7 @@ export class ApiClient {
 
   private async request<T>(
     options: RequestOptions,
-    schema: v.GenericSchema<T>
+    schema: v.GenericSchema<unknown, T> // We only care about the output type
   ): Promise<T> {
     const keypair = await generateKeypair(
       "Ed25519",

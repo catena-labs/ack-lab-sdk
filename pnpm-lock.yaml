@@ -12,8 +12,8 @@ importers:
         specifier: ^0.2.0
         version: 0.2.0
       agentcommercekit:
-        specifier: ^0.4.0
-        version: 0.4.0(a2a-js@0.2.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.3)(valibot@1.1.0(typescript@5.8.3))(zod@3.25.64)
+        specifier: ^0.5.1
+        version: 0.5.1(a2a-js@0.2.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.3)(valibot@1.1.0(typescript@5.8.3))(zod@3.25.64)
       jose:
         specifier: ^6.0.11
         version: 6.0.11
@@ -66,8 +66,8 @@ importers:
 
 packages:
 
-  '@agentcommercekit/ack-id@0.4.0':
-    resolution: {integrity: sha512-4KjM8+S6E+6bWGB5VxNBpKnlMeISptyDh59i0QqG5N291hUKCldZCyZgyqtWYBv7gldgionJemgDJBFWth0U5g==}
+  '@agentcommercekit/ack-id@0.5.1':
+    resolution: {integrity: sha512-+mzXB+HYCvrJ2RCx3c2wgZSK8+fwn77ZGlkfOlJum79+fY+vZKAyNBIFGbnW/zNvJQ9s1bYV60SrQUmedLSpqg==}
     peerDependencies:
       a2a-js: ^0.2.0
       zod: ^3.0.0
@@ -519,8 +519,8 @@ packages:
     resolution: {integrity: sha512-jRR5wdylq8CkOe6hei19GGZnxM6rBGwFl3Bg0YItGDimvjGtAvdZk4Pu6Cl4u4Igsws4a1fd1Vq3ezrhn4KmFw==}
     engines: {node: '>= 14'}
 
-  agentcommercekit@0.4.0:
-    resolution: {integrity: sha512-BwJLaOftBO4ZIqa3A/CvbMZaMDAW33raM/iYzc3Z7bTs0w16QqcmY22+BuS8qra6kUc077AU9FPFdMEwBRpDCQ==}
+  agentcommercekit@0.5.1:
+    resolution: {integrity: sha512-Co233nFNb9eAJZbk16o90e36ZLmMf12E0KMN0cYe1PKzcpdB32fWiYpJYd8hvO7WNpN72JUluHoFpBK3TJcI5w==}
     peerDependencies:
       a2a-js: ^0.2.0
       valibot: ^1.0.0
@@ -1652,7 +1652,7 @@ packages:
 
 snapshots:
 
-  '@agentcommercekit/ack-id@0.4.0(a2a-js@0.2.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.3)(zod@3.25.64)':
+  '@agentcommercekit/ack-id@0.5.1(a2a-js@0.2.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.3)(zod@3.25.64)':
     dependencies:
       '@agentcommercekit/did': 0.3.1(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.3)(zod@3.25.64)
       '@agentcommercekit/jwt': 0.4.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.3)(valibot@1.1.0(typescript@5.8.3))(zod@3.25.64)
@@ -2154,9 +2154,9 @@ snapshots:
 
   agent-base@7.1.3: {}
 
-  agentcommercekit@0.4.0(a2a-js@0.2.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.3)(valibot@1.1.0(typescript@5.8.3))(zod@3.25.64):
+  agentcommercekit@0.5.1(a2a-js@0.2.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.3)(valibot@1.1.0(typescript@5.8.3))(zod@3.25.64):
     dependencies:
-      '@agentcommercekit/ack-id': 0.4.0(a2a-js@0.2.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.3)(zod@3.25.64)
+      '@agentcommercekit/ack-id': 0.5.1(a2a-js@0.2.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.3)(zod@3.25.64)
       '@agentcommercekit/ack-pay': 0.4.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.3)(zod@3.25.64)
       '@agentcommercekit/did': 0.3.1(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.3)(zod@3.25.64)
       '@agentcommercekit/jwt': 0.4.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.3)(valibot@1.1.0(typescript@5.8.3))(zod@3.25.64)

@@ -9,16 +9,21 @@ import type { Message } from "a2a-js"
 import type { DidUri } from "agentcommercekit"
 import { ApiClient } from "../api-client"
 import type { AckHubSdkConfig } from "../types"
+import { verifyCredential } from "../utils/verify-credential"
 
 export class AckHubClientSdk {
   private apiClient: ApiClient
+  private config: AckHubSdkConfig
 
   constructor(config: AckHubSdkConfig) {
     this.apiClient = new ApiClient(config)
+    this.config = config
   }
 
   async authenticate(url: string, serverDid: DidUri) {
-    const payload = createA2AHandshakePayload(serverDid)
+    const { did, vc } = await this.apiClient.getAgentMetadata()
+
+    const payload = createA2AHandshakePayload({ recipient: serverDid, vc })
 
     const { jwt } = await this.apiClient.sign(payload)
 
@@ -33,15 +38,16 @@ export class AckHubClientSdk {
 
     const authResponse = await a2aClient.sendTask(identityParams)
 
-    const { did } = await this.apiClient.getAgentMetadata()
-
-    const { nonce: serverNonce } = await verifyA2AHandshakeMessage(
-      authResponse,
-      {
+    const { nonce: serverNonce, vc: serverVc } =
+      await verifyA2AHandshakeMessage(authResponse, {
         did,
         counterparty: serverDid
-      }
-    )
+      })
+
+    await verifyCredential(serverVc, {
+      trustedIssuers: this.config.trustedIssuers,
+      trustedAgentControllers: this.config.trustedAgentControllers
+    })
 
     if (serverNonce !== nonce) {
       throw new Error("Server nonce mismatch")
