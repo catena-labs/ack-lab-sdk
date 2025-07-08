@@ -39,8 +39,8 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
-    "a2a-js": "^0.2.0",
-    "agentcommercekit": "^0.5.1",
+    "@a2a-js/sdk": "^0.2.2",
+    "agentcommercekit": "^0.7.0",
     "jose": "^6.0.11",
     "safe-stable-stringify": "^2.5.0",
     "tool-adapters": "^0.0.2",

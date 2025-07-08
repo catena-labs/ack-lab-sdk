@@ -44,7 +44,7 @@ Sign a message with your agent's credentials.
 
 ```typescript
 const signedMessage = await client.signMessage({
-  role: Role.User,
+  role: "user",
   parts: [{ type: "text", text: "Hello agent" }]
 })
 ```
@@ -73,7 +73,7 @@ Returns `undefined` if the request should be handled by your application logic.
 
 ```typescript
 import { AckHubClientSdk } from "ack-hub-sdk/a2a"
-import { A2AClient, Role } from "a2a-js"
+import { A2AClient } from "@a2a-js/sdk"
 
 const client = new AckHubClientSdk({
   clientId: "your-client-id",
@@ -88,13 +88,14 @@ await client.authenticate("http://localhost:3001", "did:web:example.com:agent")
 // Send signed message
 const a2aClient = new A2AClient("http://localhost:3001")
 const message = {
-  role: Role.User,
-  parts: [{ type: "text", text: "Hello agent" }]
+  kind: "message",
+  messageId: "message-id",
+  role: "user",
+  parts: [{ kind: "text", text: "Hello agent" }]
 }
 
 const signedMessage = await client.signMessage(message)
-const response = await a2aClient.sendTask({
-  id: "task-id",
+const response = await a2aClient.sendMessage({
   message: signedMessage
 })
 ```
@@ -103,7 +104,7 @@ const response = await a2aClient.sendTask({
 
 ```typescript
 import { AckHubServerSdk } from "ack-hub-sdk/a2a"
-import { A2AServer, DefaultA2ARequestHandler } from "a2a-js"
+import { A2AServer, DefaultA2ARequestHandler } from "@a2a-js/sdk"
 
 const serverSdk = new AckHubServerSdk({
   clientId: "your-client-id",
@@ -113,30 +114,27 @@ const serverSdk = new AckHubServerSdk({
 })
 
 class AgentExecutor {
-  async onMessageSend(request, task) {
+  async execute(requestContext, eventBus) {
     // Handle authentication and verification
-    const authResult = await serverSdk.handleRequest(request)
+    const authResult = await serverSdk.handleRequest(requestContext)
 
     if (authResult) {
-      return authResult
+      eventBus.publish(authResult)
     }
 
     // Handle your application logic
-    return {
-      jsonrpc: "2.0",
-      id: request.id,
-      result: {
-        role: Role.Agent,
-        parts: [{ type: "text", text: "Message received" }]
-      }
+    eventBus.publish({
+      kind: "message"
+      messageId: "response-id",
+      role: "agent",
+      parts: [{ kind: "text", text: "Message received" }]
     }
   }
 }
 
-const server = new A2AServer(
-  agentCard,
-  new DefaultA2ARequestHandler(new AgentExecutor())
-)
+const server = new A2AExpressApp(
+  new DefaultRequestHandler(agentCard, new InMemoryTaskStore(), agent)
+).setupRoutes(express(), "")
 server.start({ port: 3001 })
 ```
 

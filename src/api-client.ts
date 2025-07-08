@@ -1,4 +1,5 @@
 import {
+  curveToJwtAlgorithm,
   generateKeypair,
   hexStringToBytes,
   keypairToJwk
@@ -90,7 +91,7 @@ export class ApiClient {
 
     const joseKeypair = await jose.importJWK(
       keypairToJwk(keypair),
-      keypair.algorithm
+      keypair.curve
     )
 
     const bodyString = options.body ? stringify(options.body) : ""
@@ -105,7 +106,7 @@ export class ApiClient {
 
     const authHeader = await new jose.SignJWT(authHeaderPayload)
       .setProtectedHeader({
-        alg: keypair.algorithm,
+        alg: curveToJwtAlgorithm(keypair.curve),
         kid: this.clientId
       })
       .sign(joseKeypair)
