@@ -1,11 +1,10 @@
-import { A2AClient, Role } from "a2a-js"
-import { v4 as uuidV4 } from "uuid"
+import { A2AClient } from "@a2a-js/sdk"
 import {
   createA2AHandshakeMessageFromJwt,
   createA2AHandshakePayload,
   verifyA2AHandshakeMessage
 } from "agentcommercekit/a2a"
-import type { Message } from "a2a-js"
+import type { Message } from "@a2a-js/sdk"
 import type { DidUri } from "agentcommercekit"
 import { ApiClient } from "../api-client"
 import type { AckHubSdkConfig } from "../types"
@@ -29,17 +28,18 @@ export class AckHubClientSdk {
 
     const nonce = payload.nonce
 
-    const identityParams = {
-      id: uuidV4(),
-      message: createA2AHandshakeMessageFromJwt(Role.User, jwt)
-    }
-
     const a2aClient = new A2AClient(url)
 
-    const authResponse = await a2aClient.sendTask(identityParams)
+    const authResponse = await a2aClient.sendMessage({
+      message: createA2AHandshakeMessageFromJwt("user", jwt)
+    })
+
+    if ("error" in authResponse || authResponse.result.kind !== "message") {
+      throw new Error("Failed to authenticate")
+    }
 
     const { nonce: serverNonce, vc: serverVc } =
-      await verifyA2AHandshakeMessage(authResponse, {
+      await verifyA2AHandshakeMessage(authResponse.result, {
         did,
         counterparty: serverDid
       })

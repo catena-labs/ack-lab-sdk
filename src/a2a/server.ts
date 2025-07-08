@@ -1,4 +1,3 @@
-import { Role } from "a2a-js"
 import { isDidUri } from "agentcommercekit"
 import {
   createA2AHandshakeMessageFromJwt,
@@ -6,15 +5,17 @@ import {
   verifyA2AHandshakeMessage,
   verifyA2ASignedMessage
 } from "agentcommercekit/a2a"
-import type {
-  DataPart,
-  Part,
-  SendMessageRequest,
-  SendMessageResponse
-} from "a2a-js"
+import {
+  A2AError,
+  type DataPart,
+  type Message,
+  type Part,
+  type RequestContext
+} from "@a2a-js/sdk"
 import type { AckHubSdkConfig } from "../types"
 import { ApiClient } from "../api-client"
 import { verifyCredential } from "../utils/verify-credential"
+import { v4 } from "uuid"
 
 type VerificationPart = Omit<DataPart, "data"> & {
   data: {
@@ -23,7 +24,7 @@ type VerificationPart = Omit<DataPart, "data"> & {
 }
 
 function isVerificationPart(part: Part): part is VerificationPart {
-  return part.type === "data" && "verificationChallenge" in part.data
+  return part.kind === "data" && "verificationChallenge" in part.data
 }
 
 export class AckHubServerSdk {
@@ -37,16 +38,16 @@ export class AckHubServerSdk {
   }
 
   async handleRequest(
-    request: SendMessageRequest
-  ): Promise<SendMessageResponse | undefined> {
-    const message = request.params.message
+    requestContext: RequestContext
+  ): Promise<Message | undefined> {
+    const message = requestContext.userMessage
 
-    if (this.isVerificationRequest(request)) {
-      return this.handleVerification(request)
+    if (this.isVerificationRequest(message)) {
+      return this.handleVerification(requestContext)
     }
 
-    if (this.isAuthRequest(request)) {
-      return this.handleAuthentication(request)
+    if (this.isAuthRequest(message)) {
+      return this.handleAuthentication(requestContext)
     }
 
     const { did } = await this.apiClient.getAgentMetadata()
@@ -62,36 +63,39 @@ export class AckHubServerSdk {
 
       // Will need to extend this mechanism to support a serverless context
       if (!this.authenticatedClients.has(clientDid)) {
-        return {
-          jsonrpc: "2.0",
-          id: request.id,
-          error: { code: -32001, message: "Authentication required" }
-        }
+        throw new A2AError(
+          -32001,
+          "Authentication required",
+          {},
+          requestContext.taskId
+        )
       }
     } catch (error) {
       // There are a lot of reasons this verification could have failed.
       // We might want to refactor this to better indicate what went wrong
       console.error(error)
-      return {
-        jsonrpc: "2.0",
-        id: request.id,
-        error: { code: -32001, message: "Identity verification failed" }
-      }
+      throw new A2AError(
+        -32001,
+        "Identity verification failed",
+        {},
+        requestContext.taskId
+      )
     }
   }
-  private isVerificationRequest(request: SendMessageRequest): boolean {
-    return request.params.message.parts.some(isVerificationPart)
+
+  private isVerificationRequest(message: Message): boolean {
+    return message.parts.some(isVerificationPart)
   }
 
-  private isAuthRequest(request: SendMessageRequest): boolean {
-    return request.params.message.parts.some(
-      (part) => "data" in part && "jwt" in part.data
+  private isAuthRequest(message: Message): boolean {
+    return message.parts.some(
+      (part) => part.kind === "data" && "jwt" in part.data
     )
   }
 
   private async handleAuthentication(
-    request: SendMessageRequest
-  ): Promise<SendMessageResponse> {
+    requestContext: RequestContext
+  ): Promise<Message> {
     try {
       const { did, vc } = await this.apiClient.getAgentMetadata()
 
@@ -99,7 +103,7 @@ export class AckHubServerSdk {
         nonce: clientNonce,
         iss: clientDid,
         vc: clientVc
-      } = await verifyA2AHandshakeMessage(request.params.message, {
+      } = await verifyA2AHandshakeMessage(requestContext.userMessage, {
         did
       })
 
@@ -119,25 +123,22 @@ export class AckHubServerSdk {
 
       const { jwt } = await this.apiClient.sign(payload)
 
-      return {
-        jsonrpc: "2.0",
-        id: request.id,
-        result: createA2AHandshakeMessageFromJwt(Role.Agent, jwt)
-      }
+      return createA2AHandshakeMessageFromJwt("agent", jwt)
     } catch (error) {
       console.error(error)
-      return {
-        jsonrpc: "2.0",
-        id: request.id,
-        error: { code: -32603, message: "Identity verification failed" }
-      }
+      throw new A2AError(
+        -32603,
+        "Identity verification failed",
+        {},
+        requestContext.taskId
+      )
     }
   }
 
   private async handleVerification(
-    request: SendMessageRequest
-  ): Promise<SendMessageResponse | undefined> {
-    const message = request.params.message
+    requestContext: RequestContext
+  ): Promise<Message | undefined> {
+    const message = requestContext.userMessage
     const part = message.parts.find(isVerificationPart)
 
     if (!part) {
@@ -156,12 +157,10 @@ export class AckHubServerSdk {
     }
 
     return {
-      jsonrpc: "2.0",
-      id: request.id,
-      result: {
-        role: Role.Agent,
-        parts: [{ type: "data", data: { verified: success } }]
-      }
+      kind: "message",
+      messageId: v4(),
+      role: "agent",
+      parts: [{ kind: "data", data: { verified: success } }]
     }
   }
 }
