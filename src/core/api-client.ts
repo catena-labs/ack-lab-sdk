@@ -13,8 +13,7 @@ import * as jose from "jose"
 import { stringify } from "safe-stable-stringify"
 import * as v from "valibot"
 import type { ApiClientConfig } from "./types"
-
-import { sha256 } from "./utils/sha-256"
+import { sha256 } from "../utils/sha-256"
 
 export interface RequestOptions {
   method: string

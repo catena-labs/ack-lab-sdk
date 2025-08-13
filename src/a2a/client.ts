@@ -6,11 +6,11 @@ import {
 } from "agentcommercekit/a2a"
 import type { Message } from "@a2a-js/sdk"
 import type { DidUri } from "agentcommercekit"
-import { ApiClient } from "../api-client"
-import type { AckHubSdkConfig } from "../types"
+import { ApiClient } from "../core"
+import type { AckHubSdkConfig } from "../core"
 import { verifyCredential } from "../utils/verify-credential"
 
-export class AckHubClientSdk {
+export class AckLabClientSdk {
   private apiClient: ApiClient
   private config: AckHubSdkConfig
 

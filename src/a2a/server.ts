@@ -12,8 +12,8 @@ import {
   type Part,
   type RequestContext
 } from "@a2a-js/sdk"
-import type { AckHubSdkConfig } from "../types"
-import { ApiClient } from "../api-client"
+import type { AckHubSdkConfig } from "../core"
+import { ApiClient } from "../core"
 import { verifyCredential } from "../utils/verify-credential"
 import { v4 } from "uuid"
 
@@ -27,7 +27,7 @@ function isVerificationPart(part: Part): part is VerificationPart {
   return part.kind === "data" && "verificationChallenge" in part.data
 }
 
-export class AckHubServerSdk {
+export class AckLabServerSdk {
   private authenticatedClients = new Set<string>()
   private apiClient: ApiClient
   private config: AckHubSdkConfig
