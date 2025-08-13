@@ -1,10 +1,3 @@
-import { isDidUri } from "agentcommercekit"
-import {
-  createA2AHandshakeMessageFromJwt,
-  createA2AHandshakePayload,
-  verifyA2AHandshakeMessage,
-  verifyA2ASignedMessage
-} from "agentcommercekit/a2a"
 import {
   A2AError,
   type DataPart,
@@ -12,10 +5,16 @@ import {
   type Part,
   type RequestContext
 } from "@a2a-js/sdk"
-import type { AckHubSdkConfig } from "../types"
-import { ApiClient } from "../api-client"
-import { verifyCredential } from "../utils/verify-credential"
+import { isDidUri } from "agentcommercekit"
+import {
+  createA2AHandshakeMessageFromJwt,
+  createA2AHandshakePayload,
+  verifyA2AHandshakeMessage,
+  verifyA2ASignedMessage
+} from "agentcommercekit/a2a"
 import { v4 } from "uuid"
+import { ApiClient, type AckHubSdkConfig } from "../core"
+import { verifyCredential } from "../utils/verify-credential"
 
 type VerificationPart = Omit<DataPart, "data"> & {
   data: {
@@ -27,7 +26,7 @@ function isVerificationPart(part: Part): part is VerificationPart {
   return part.kind === "data" && "verificationChallenge" in part.data
 }
 
-export class AckHubServerSdk {
+export class AckLabServerSdk {
   private authenticatedClients = new Set<string>()
   private apiClient: ApiClient
   private config: AckHubSdkConfig

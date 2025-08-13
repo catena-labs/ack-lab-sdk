@@ -6,19 +6,19 @@ Agent-to-Agent (A2A) protocol implementation for secure agent authentication and
 
 The A2A SDK provides two main classes for implementing secure agent communication:
 
-- **AckHubClientSdk**: Authenticate with agents and sign messages
-- **AckHubServerSdk**: Handle authentication requests and verify client credentials
+- **AckLabClientSdk**: Authenticate with agents and sign messages
+- **AckLabServerSdk**: Handle authentication requests and verify client credentials
 
 ## API Reference
 
-### AckHubClientSdk
+### AckLabClientSdk
 
 Client-side SDK for agent authentication and message signing.
 
 #### Constructor
 
 ```typescript
-new AckHubClientSdk(config: AckHubSdkConfig)
+new AckLabClientSdk(config: AckHubSdkConfig)
 ```
 
 **Config:**
@@ -49,14 +49,14 @@ const signedMessage = await client.signMessage({
 })
 ```
 
-### AckHubServerSdk
+### AckLabServerSdk
 
 Server-side SDK for handling authentication and verification.
 
 #### Constructor
 
 ```typescript
-new AckHubServerSdk(config: AckHubSdkConfig)
+new AckLabServerSdk(config: AckHubSdkConfig)
 ```
 
 #### Methods
@@ -72,10 +72,10 @@ Returns `undefined` if the request should be handled by your application logic.
 ### Client Implementation
 
 ```typescript
-import { AckHubClientSdk } from "ack-hub-sdk/a2a"
 import { A2AClient } from "@a2a-js/sdk"
+import { AckLabClientSdk } from "ack-lab-sdk/a2a"
 
-const client = new AckHubClientSdk({
+const client = new AckLabClientSdk({
   clientId: "your-client-id",
   clientSecret: "your-client-secret",
   trustedIssuers: ["did:web:example.com"],
@@ -103,10 +103,10 @@ const response = await a2aClient.sendMessage({
 ### Server Implementation
 
 ```typescript
-import { AckHubServerSdk } from "ack-hub-sdk/a2a"
+import { AckLabServerSdk } from "ack-lab-sdk/a2a"
 import { A2AServer, DefaultA2ARequestHandler } from "@a2a-js/sdk"
 
-const serverSdk = new AckHubServerSdk({
+const serverSdk = new AckLabServerSdk({
   clientId: "your-client-id",
   clientSecret: "your-client-secret",
   trustedIssuers: ["did:web:example.com"],
