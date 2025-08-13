@@ -72,8 +72,8 @@ Returns `undefined` if the request should be handled by your application logic.
 ### Client Implementation
 
 ```typescript
-import { AckLabClientSdk } from "ack-lab-sdk/a2a"
 import { A2AClient } from "@a2a-js/sdk"
+import { AckLabClientSdk } from "ack-lab-sdk/a2a"
 
 const client = new AckLabClientSdk({
   clientId: "your-client-id",

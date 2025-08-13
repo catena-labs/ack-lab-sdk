@@ -1,13 +1,11 @@
-import { A2AClient } from "@a2a-js/sdk"
+import { A2AClient, type Message } from "@a2a-js/sdk"
+import type { DidUri } from "agentcommercekit"
 import {
   createA2AHandshakeMessageFromJwt,
   createA2AHandshakePayload,
   verifyA2AHandshakeMessage
 } from "agentcommercekit/a2a"
-import type { Message } from "@a2a-js/sdk"
-import type { DidUri } from "agentcommercekit"
-import { ApiClient } from "../core"
-import type { AckHubSdkConfig } from "../core"
+import { ApiClient, type AckHubSdkConfig } from "../core"
 import { verifyCredential } from "../utils/verify-credential"
 
 export class AckLabClientSdk {

@@ -1,19 +1,23 @@
 import eslint from "@eslint/js"
-import tseslint from "typescript-eslint"
+import gitignore from "eslint-config-flat-gitignore"
+import prettier from "eslint-config-prettier"
 import globals from "globals"
+import tseslint from "typescript-eslint"
 
 export default [
-  {
-    ignores: ["dist/**", "node_modules/**"]
-  },
+  gitignore(),
   ...tseslint.config(
     eslint.configs.recommended,
-    tseslint.configs.strict,
-    tseslint.configs.stylistic,
+    tseslint.configs.strictTypeChecked,
+    tseslint.configs.stylisticTypeChecked,
     {
       languageOptions: {
         globals: {
           ...globals.node
+        },
+        parserOptions: {
+          projectService: true,
+          tsconfigRootDir: import.meta.dirname
         }
       },
       rules: {
@@ -28,5 +32,14 @@ export default [
         ]
       }
     }
-  )
+  ),
+
+  /**
+   * Javascript files.
+   *
+   * Ignore type-checking
+   */
+  { files: ["**/*.{js,mjs,cjs}"], ...tseslint.configs.disableTypeChecked },
+
+  prettier
 ]
