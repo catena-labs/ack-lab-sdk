@@ -2,7 +2,8 @@ import {
   curveToJwtAlgorithm,
   generateKeypair,
   hexStringToBytes,
-  keypairToJwk
+  keypairToJwk,
+  type W3CCredential
 } from "agentcommercekit"
 import {
   credentialSchema,
@@ -45,7 +46,7 @@ export class ApiClient {
   private _metadata: AgentMetadata | undefined = undefined
 
   constructor({ baseUrl, clientId, clientSecret }: ApiClientConfig) {
-    this.baseUrl = baseUrl ?? "https://api.ack-hub.com"
+    this.baseUrl = baseUrl ?? "http://localhost:4002"
     this.clientId = clientId
     this.clientSecret = clientSecret
   }
@@ -64,6 +65,40 @@ export class ApiClient {
     this._metadata = metadata
 
     return metadata
+  }
+
+  async getBalance(): Promise<Record<string, string>> {
+    return this.request(
+      { method: "GET", path: "/v1/balance" },
+      v.record(v.string(), v.string())
+    )
+  }
+
+  async getPaymentRequest(
+    amount: number,
+    description?: string
+  ): Promise<{ paymentToken: string }> {
+    return this.request(
+      {
+        method: "POST",
+        path: "/v1/payment-requests",
+        body: { amount, description }
+      },
+      v.object({ paymentToken: v.string() })
+    )
+  }
+
+  async executePayment(
+    paymentToken: string
+  ): Promise<{ receipt: W3CCredential }> {
+    return this.request(
+      {
+        method: "POST",
+        path: "/v1/payments",
+        body: { paymentToken }
+      },
+      v.object({ receipt: credentialSchema })
+    )
   }
 
   async sign(payload: unknown): Promise<{ jwt: string }> {
