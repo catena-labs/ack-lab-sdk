@@ -4,36 +4,33 @@ import prettier from "eslint-config-prettier"
 import globals from "globals"
 import tseslint from "typescript-eslint"
 
-export default [
+export default tseslint.config(
   gitignore(),
-  ...tseslint.config(
-    eslint.configs.recommended,
-    tseslint.configs.strictTypeChecked,
-    tseslint.configs.stylisticTypeChecked,
-    {
-      languageOptions: {
-        globals: {
-          ...globals.node
-        },
-        parserOptions: {
-          projectService: true,
-          tsconfigRootDir: import.meta.dirname
-        }
+  eslint.configs.recommended,
+  tseslint.configs.strictTypeChecked,
+  tseslint.configs.stylisticTypeChecked,
+  {
+    languageOptions: {
+      globals: {
+        ...globals.node
       },
-      rules: {
-        "@typescript-eslint/no-unused-vars": [
-          "error",
-          {
-            argsIgnorePattern: "^_",
-            varsIgnorePattern: "^_",
-            caughtErrorsIgnorePattern: "^_",
-            destructuredArrayIgnorePattern: "^_"
-          }
-        ]
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname
       }
+    },
+    rules: {
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_"
+        }
+      ]
     }
-  ),
-
+  },
   /**
    * Javascript files.
    *
@@ -42,4 +39,4 @@ export default [
   { files: ["**/*.{js,mjs,cjs}"], ...tseslint.configs.disableTypeChecked },
 
   prettier
-]
+)

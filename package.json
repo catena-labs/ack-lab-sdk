@@ -1,5 +1,5 @@
 {
-  "name": "ack-lab-sdk",
+  "name": "@ack-lab/sdk",
   "version": "0.0.2",
   "description": "Ack Lab SDK",
   "homepage": "https://github.com/catena-labs/ack-lab-sdk#readme",
@@ -29,7 +29,7 @@
   ],
   "scripts": {
     "build": "tsdown",
-    "check": "pnpm check:format && pnpm check:lint && pnpm check:types && pnpm check:publint",
+    "check": "pnpm check:format && pnpm check:lint && pnpm check:types && pnpm check:publint && pnpm test",
     "check:format": "prettier --experimental-cli --check .",
     "check:lint": "eslint .",
     "check:publint": "publint",
@@ -37,11 +37,13 @@
     "clean": "git clean -fdX dist",
     "format": "prettier --experimental-cli --write .",
     "lint:fix": "eslint . --fix",
-    "outdated": "npx npm-check-updates --interactive --format group"
+    "nuke": "pnpm clean && git clean -xdf node_modules",
+    "outdated": "npx npm-check-updates --interactive --format group",
+    "test": "vitest"
   },
   "dependencies": {
     "@a2a-js/sdk": "0.2.2",
-    "agentcommercekit": "^0.8.2",
+    "agentcommercekit": "^0.9.1",
     "jose": "^6.0.12",
     "safe-stable-stringify": "^2.5.0",
     "tool-adapters": "^0.0.2",
@@ -50,7 +52,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
-    "@ianvs/prettier-plugin-sort-imports": "^4.6.1",
+    "@ianvs/prettier-plugin-sort-imports": "^4.6.2",
     "@prettier/plugin-oxc": "^0.0.4",
     "@types/node": "^24.2.1",
     "eslint": "^9.33.0",
@@ -63,7 +65,8 @@
     "publint": "^0.3.12",
     "tsdown": "^0.14.1",
     "typescript": "^5",
-    "typescript-eslint": "^8.39.1"
+    "typescript-eslint": "^8.39.1",
+    "vitest": "^3.2.4"
   },
   "packageManager": "pnpm@10.14.0"
 }

@@ -18,6 +18,6 @@
     "lib": ["es2022", "dom"],
     "rootDir": "src"
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "test/**/*", "*.config.ts"],
   "exclude": ["node_modules", "dist"]
 }
