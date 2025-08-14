@@ -15,8 +15,7 @@
     "moduleResolution": "Bundler",
     "outDir": "dist",
     "declaration": true,
-    "lib": ["es2022", "dom"],
-    "rootDir": "src"
+    "lib": ["es2022", "dom"]
   },
   "include": ["src/**/*", "test/**/*", "*.config.ts"],
   "exclude": ["node_modules", "dist"]
