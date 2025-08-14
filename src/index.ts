@@ -1,1 +1,1 @@
-export * from "./core/types"
+export * from "./api-client/types"

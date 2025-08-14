@@ -13,7 +13,7 @@ import {
   verifyA2ASignedMessage
 } from "agentcommercekit/a2a"
 import { v4 } from "uuid"
-import { ApiClient, type AckHubSdkConfig } from "../core"
+import { ApiClient, type AckHubSdkConfig } from "../api-client"
 import { verifyCredential } from "../utils/verify-credential"
 
 type VerificationPart = Omit<DataPart, "data"> & {
