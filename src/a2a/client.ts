@@ -5,7 +5,7 @@ import {
   createA2AHandshakePayload,
   verifyA2AHandshakeMessage
 } from "agentcommercekit/a2a"
-import { ApiClient, type AckHubSdkConfig } from "../core"
+import { ApiClient, type AckHubSdkConfig } from "../api-client"
 import { verifyCredential } from "../utils/verify-credential"
 
 export class AckLabClientSdk {

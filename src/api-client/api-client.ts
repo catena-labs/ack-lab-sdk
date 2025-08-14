@@ -3,11 +3,14 @@ import {
   generateKeypair,
   hexStringToBytes,
   keypairToJwk,
+  type DidUri,
+  type JwtString,
   type W3CCredential
 } from "agentcommercekit"
 import {
   credentialSchema,
-  didUriSchema
+  didUriSchema,
+  jwtStringSchema
 } from "agentcommercekit/schemas/valibot"
 import * as jose from "jose"
 import { stringify } from "safe-stable-stringify"
@@ -100,10 +103,41 @@ export class ApiClient {
     )
   }
 
-  async sign(payload: unknown): Promise<{ jwt: string }> {
+  /**
+   * Create a signed JWT using the client's private key.
+   *
+   * @param payload The payload to sign
+   * @returns The signed payload
+   */
+  async sign(payload: unknown): Promise<{ jwt: JwtString }> {
     return this.request(
       { method: "POST", path: "/v1/sign", body: payload },
-      v.object({ jwt: v.string() })
+      v.object({ jwt: jwtStringSchema })
+    )
+  }
+
+  /**
+   * Generate a verifiable presentation
+   * @param aud The audience of the presentation
+   * @param challenge The challenge to use for the presentation
+   * @returns The verifiable presentation
+   */
+  async generateVerifiablePresentation({
+    aud,
+    challenge,
+    nonce
+  }: {
+    aud: DidUri
+    challenge?: string
+    nonce?: string
+  }) {
+    return this.request(
+      {
+        method: "POST",
+        path: "/v1/verifiable-presentations",
+        body: { aud, challenge, nonce }
+      },
+      v.object({ presentation: jwtStringSchema })
     )
   }
 
