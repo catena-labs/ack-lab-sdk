@@ -9,6 +9,8 @@ import * as v from "valibot"
 import { jwtStringSchema } from "agentcommercekit/schemas/valibot"
 import { HandshakeClient, type ApiClientConfig } from "./core"
 
+type AgentCaller = (input: { message: string }) => Promise<string>
+
 type AgentFn = (prompt: string) => Promise<string>
 type AgentHandler = (jwt: JwtString) => Promise<{ jwt: JwtString }>
 
@@ -133,10 +135,10 @@ export class AckLabSdk {
    * })
    * ```
    */
-  createAgentCaller(url: string) {
+  createAgentCaller(url: string): AgentCaller {
     let authedDid: string | undefined
 
-    return async (input: { message: string }): Promise<string> => {
+    return async (input) => {
       authedDid ??= await this.authenticateAgent(url)
 
       const { jwt: messageJwt } = await this.client.sign({
@@ -148,8 +150,6 @@ export class AckLabSdk {
 
       const parsed = await verifyJwt(responseJwt, { resolver: this.resolver })
       const { text } = v.parse(payloadSchema, parsed.payload)
-
-      console.log(">>>> text response", text)
 
       return text
     }
@@ -257,8 +257,6 @@ export class AckLabSdk {
    * @private
    */
   private async authenticateAgent(url: string) {
-    console.log(">>>> authenticating agent at", url)
-
     const initHandshakeMessage = await this.client.initiateHandshake()
 
     const handshakeResponseJwt = await jwtFetch(url, initHandshakeMessage)
