@@ -29,9 +29,8 @@ async function runAgentB(message: string) {
 }
 
 const ackLabSdk = new AckLabSdk({
-  clientId: "jkbouswwx3jz1zvz7hxgs3ff",
-  clientSecret:
-    "5a2b23d8408a1f7ea407eea43166553c2f50c8dbbee00b6f9ef159e1266601e8"
+  clientId: "<client-id>",
+  clientSecret: "<client-secret>"
 })
 
 const callAgent = ackLabSdk.createAgentCaller("http://localhost:7577/chat")
@@ -78,9 +77,8 @@ async function main() {
     port: 7577,
     runAgent: runAgentB,
     sdk: new AckLabSdk({
-      clientId: "pj15b3fbe0pgbagaovq55co4",
-      clientSecret:
-        "128931b34f45732ecd99f643d04427c0a0bd154d1cfcd261707813465519e28f"
+      clientId: "<client-id>",
+      clientSecret: "<client-secret>"
     })
   })
 
