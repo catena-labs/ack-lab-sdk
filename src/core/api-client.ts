@@ -34,8 +34,7 @@ const apiResponseSchema = v.variant("ok", [
 ])
 
 const agentMetadataSchema = v.object({
-  did: didUriSchema,
-  vc: credentialSchema
+  did: didUriSchema
 })
 
 type AgentMetadata = v.InferOutput<typeof agentMetadataSchema>
