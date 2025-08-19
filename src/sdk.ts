@@ -7,7 +7,7 @@ import {
 
 import * as v from "valibot"
 import { jwtStringSchema } from "agentcommercekit/schemas/valibot"
-import { HandshakeClient, type ApiClientConfig } from "./core"
+import { ApiClient, HandshakeClient, type ApiClientConfig } from "./core"
 
 type AgentCaller = (input: { message: string }) => Promise<string>
 
@@ -76,7 +76,8 @@ async function jwtFetch(url: string, jwt: JwtString) {
  * ```
  */
 export class AckLabSdk {
-  private readonly client: HandshakeClient
+  private readonly apiClient: ApiClient
+  private readonly handshakeClient: HandshakeClient
   private readonly resolver: Resolvable
 
   /**
@@ -99,7 +100,11 @@ export class AckLabSdk {
   constructor(config: ApiClientConfig, opts?: { resolver?: Resolvable }) {
     this.resolver = opts?.resolver ?? getDidResolver()
 
-    this.client = new HandshakeClient(config, { resolver: this.resolver })
+    this.apiClient = new ApiClient(config)
+
+    this.handshakeClient = new HandshakeClient(this.apiClient, {
+      resolver: this.resolver
+    })
   }
 
   /**
@@ -141,7 +146,7 @@ export class AckLabSdk {
     return async (input) => {
       authedDid ??= await this.authenticateAgent(url)
 
-      const { jwt: messageJwt } = await this.client.sign({
+      const { jwt: messageJwt } = await this.apiClient.sign({
         type: "message",
         ...input
       })
@@ -205,15 +210,15 @@ export class AckLabSdk {
     const authedDids = new Set<string>()
 
     return async (jwt) => {
-      const requestType = this.client.getRequestType(jwt)
+      const requestType = this.handshakeClient.getRequestType(jwt)
 
       switch (requestType) {
         case "handshake-init": {
-          return this.client.handleHandshakeInit(jwt)
+          return this.handshakeClient.handleHandshakeInit(jwt)
         }
         case "handshake-response": {
           const { counterpartyDid, jwt: responseJwt } =
-            await this.client.finalizeHandshake(jwt)
+            await this.handshakeClient.finalizeHandshake(jwt)
 
           authedDids.add(counterpartyDid)
 
@@ -237,10 +242,18 @@ export class AckLabSdk {
 
           const text = await runAgent(message)
 
-          return this.client.sign({ text })
+          return this.apiClient.sign({ text })
         }
       }
     }
+  }
+
+  async createPaymentRequest(amount: number, description?: string) {
+    return this.apiClient.getPaymentRequest(amount, description)
+  }
+
+  async executePayment(paymentToken: string) {
+    return this.apiClient.executePayment(paymentToken)
   }
 
   /**
@@ -257,17 +270,17 @@ export class AckLabSdk {
    * @private
    */
   private async authenticateAgent(url: string) {
-    const initHandshakeMessage = await this.client.initiateHandshake()
+    const initHandshakeMessage = await this.handshakeClient.initiateHandshake()
 
     const handshakeResponseJwt = await jwtFetch(url, initHandshakeMessage)
 
     const { jwt: responseJwt } =
-      await this.client.handleHandshakeResponse(handshakeResponseJwt)
+      await this.handshakeClient.handleHandshakeResponse(handshakeResponseJwt)
 
     const handshakeCompleteJwt = await jwtFetch(url, responseJwt)
 
     const { counterpartyDid } =
-      await this.client.verifyHandshakeComplete(handshakeCompleteJwt)
+      await this.handshakeClient.verifyHandshakeComplete(handshakeCompleteJwt)
 
     return counterpartyDid
   }

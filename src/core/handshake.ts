@@ -13,7 +13,6 @@ import { ApiClient } from "./api-client"
 import { generateChallenge } from "../utils/challenge"
 import { didUriSchema } from "agentcommercekit/schemas/valibot"
 import * as jose from "jose"
-import type { ApiClientConfig } from "./types"
 
 export class HandshakeClient {
   private readonly apiClient: ApiClient
@@ -21,8 +20,8 @@ export class HandshakeClient {
 
   private resolver: Resolvable
 
-  constructor(config: ApiClientConfig, opts?: { resolver?: Resolvable }) {
-    this.apiClient = new ApiClient(config)
+  constructor(apiClient: ApiClient, opts?: { resolver?: Resolvable }) {
+    this.apiClient = apiClient
     this.resolver = opts?.resolver ?? getDidResolver()
   }
 
@@ -213,16 +212,6 @@ export class HandshakeClient {
     }
 
     return result.output.type
-  }
-
-  /**
-   * Sign a payload using the agent's credentials.
-   * Convenience method that delegates to the underlying API client.
-   * @param payload The data to sign
-   * @returns Promise resolving to signed JWT
-   */
-  sign(payload: unknown) {
-    return this.apiClient.sign(payload)
   }
 
   /**
