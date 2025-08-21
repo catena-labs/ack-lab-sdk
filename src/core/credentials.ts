@@ -47,8 +47,6 @@ function findAndValidateCredential<T extends W3CCredential>(
 ): T {
   const credential = credentials.find((c) => c.type.includes(type))
 
-  console.log(`found credential for type ${type}`, credential)
-
   if (!guard(credential)) {
     const message = credential
       ? `Invalid ${type} credential`
