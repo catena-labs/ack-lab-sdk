@@ -13,6 +13,7 @@ import { ApiClient } from "./api-client"
 import { generateChallenge } from "../utils/challenge"
 import { didUriSchema } from "agentcommercekit/schemas/valibot"
 import * as jose from "jose"
+import { verifyPresentationClaims } from "./credentials"
 
 export class HandshakeClient {
   private readonly apiClient: ApiClient
@@ -236,13 +237,15 @@ export class HandshakeClient {
 
     this.validateChallenge(counterpartyDid, payload)
 
-    await Promise.all(
-      verifiablePresentation.verifiableCredential?.map(async (credential) => {
-        await verifyParsedCredential(credential, { resolver: this.resolver })
+    const credentials = verifiablePresentation.verifiableCredential ?? []
 
-        // TODO - need to verify the underlying credentials
-      }) ?? []
+    await Promise.all(
+      credentials.map(async (credential) => {
+        await verifyParsedCredential(credential, { resolver: this.resolver })
+      })
     )
+
+    verifyPresentationClaims(counterpartyDid, credentials)
 
     return { payload, counterpartyDid: counterpartyDid as DidUri }
   }
