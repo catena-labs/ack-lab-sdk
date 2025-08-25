@@ -4,14 +4,9 @@ import {
   hexStringToBytes,
   keypairToJwk,
   type DidUri,
-  type JwtString,
-  type W3CCredential
+  type JwtString
 } from "agentcommercekit"
-import {
-  credentialSchema,
-  didUriSchema,
-  jwtStringSchema
-} from "agentcommercekit/schemas/valibot"
+import { didUriSchema, jwtStringSchema } from "agentcommercekit/schemas/valibot"
 import * as jose from "jose"
 import { stringify } from "safe-stable-stringify"
 import * as v from "valibot"
@@ -89,16 +84,14 @@ export class ApiClient {
     )
   }
 
-  async executePayment(
-    paymentToken: string
-  ): Promise<{ receipt: W3CCredential }> {
+  async executePayment(paymentToken: string): Promise<{ receipt: JwtString }> {
     return this.request(
       {
         method: "POST",
         path: "/v1/payments",
         body: { paymentToken }
       },
-      v.object({ receipt: credentialSchema })
+      v.object({ receipt: jwtStringSchema })
     )
   }
 
