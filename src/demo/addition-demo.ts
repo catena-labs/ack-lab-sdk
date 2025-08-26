@@ -52,7 +52,11 @@ async function runAgentA(message: string) {
           try {
             return await callAgent({ message })
           } catch (error) {
-            console.error(">>>> error calling addition agent", error)
+            console.error(
+              ">>>> error calling addition agent:",
+              (error as Error).message,
+              JSON.stringify(error, null, 2)
+            )
             return {
               error: true,
               message: error instanceof Error ? error.message : "Unknown error"

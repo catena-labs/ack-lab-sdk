@@ -12,6 +12,7 @@ import { stringify } from "safe-stable-stringify"
 import * as v from "valibot"
 import { sha256 } from "../utils/sha-256"
 import type { ApiClientConfig } from "./types"
+import { ApiError, apiErrorIssuesSchema } from "./errors/api-error"
 
 export interface RequestOptions {
   method: string
@@ -19,14 +20,18 @@ export interface RequestOptions {
   body?: unknown
 }
 
-const apiResponseSchema = v.variant("ok", [
-  v.object({
-    ok: v.literal(false),
-    message: v.string(),
-    cause: v.optional(v.unknown())
-  }),
-  v.object({ ok: v.literal(true), data: v.nullable(v.unknown()) })
-])
+const apiSuccessSchema = v.object({
+  ok: v.literal(true),
+  data: v.nullable(v.unknown())
+})
+
+const apiErrorSchema = v.object({
+  ok: v.literal(false),
+  error: v.string(),
+  issues: v.optional(v.array(apiErrorIssuesSchema))
+})
+
+const apiResponseSchema = v.variant("ok", [apiSuccessSchema, apiErrorSchema])
 
 const agentMetadataSchema = v.object({
   did: didUriSchema
@@ -187,15 +192,37 @@ export class ApiClient {
     const response = await fetch(url, init)
 
     if (!response.ok) {
-      throw new Error(`Request failed: ${response.statusText}`)
+      await handleErrorResponse(response)
     }
 
     const result = v.parse(apiResponseSchema, await response.json())
 
     if (!result.ok) {
-      throw new Error(result.message)
+      handleApiError(result, response.status)
     }
 
     return v.parse(schema, result.data)
   }
+}
+
+function handleApiError(
+  result: v.InferOutput<typeof apiErrorSchema>,
+  statusCode?: number
+): never {
+  throw new ApiError(result.error, result.issues ?? [], statusCode)
+}
+
+async function handleErrorResponse(response: Response): Promise<never> {
+  let result: v.InferOutput<typeof apiErrorSchema>
+
+  try {
+    result = v.parse(apiErrorSchema, await response.json())
+  } catch {
+    result = {
+      ok: false,
+      error: `Request failed: ${response.statusText}`
+    }
+  }
+
+  handleApiError(result, response.status)
 }
