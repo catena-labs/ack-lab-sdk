@@ -1,10 +1,10 @@
-import { generateText, stepCountIs, tool } from "ai"
-import { serveAgent, serveAuthedAgent } from "./serve-agent"
 import { anthropic } from "@ai-sdk/anthropic"
-import { z } from "zod"
-import colors from "yoctocolors"
 import { input } from "@inquirer/prompts"
+import { generateText, stepCountIs, tool } from "ai"
+import colors from "yoctocolors"
+import { z } from "zod"
 import { AckLabSdk } from "../sdk"
+import { serveAgent, serveAuthedAgent } from "./serve-agent"
 
 async function runAgentB(message: string) {
   const result = await generateText({

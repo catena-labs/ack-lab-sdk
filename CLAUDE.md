@@ -20,39 +20,44 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm test` - Run all tests
 - `vitest` - Run tests directly (supports watch mode if needed)
 
+### Demo
+
+- `pnpm demo` - Run the addition demo showcasing agent-to-agent communication
+
 ## Architecture Overview
 
 This is the **Ack Lab SDK** - a TypeScript SDK for secure agent-to-agent (A2A) authentication and communication on the ACK-Lab platform.
 
 ### Core Structure
 
-- **Main exports** (`src/index.ts`): Exposes core types
-- **A2A SDK** (`src/a2a/`): Agent-to-Agent protocol implementation with client/server SDKs
-- **Core** (`src/core/`): Shared API client and type definitions
-- **Utils** (`src/utils/`): SHA-256 hashing and credential verification utilities
-
-### Module Exports
-
-The package has dual exports:
-
-- Main export (`.`): Core types and utilities
-- A2A export (`./a2a`): Agent-to-Agent SDK classes (`AckLabClientSdk`, `AckLabServerSdk`)
+- **Main export** (`src/index.ts`): Exposes the main `AckLabSdk` class
+- **SDK implementation** (`src/sdk.ts`): Core `AckLabSdk` class with agent caller and request handler factories
+- **Core** (`src/core/`): API client, handshake protocol, and type definitions
+- **Utils** (`src/utils/`): Challenge generation and SHA-256 hashing utilities
+- **Demo** (`src/demo/`): Example implementations showing A2A communication patterns
 
 ### Key Components
 
-- **AckLabClientSdk**: Handles agent authentication and message signing
-- **AckLabServerSdk**: Processes authentication requests and verifies credentials
-- **ApiClient**: Core HTTP client for ACK-Lab API communication
+- **AckLabSdk**: Main SDK class that provides high-level APIs for agent-to-agent communication
+  - `createAgentCaller(url)`: Creates a function for calling remote agents with automatic authentication
+  - `createRequestHandler(agentFn)`: Creates a handler for processing incoming authenticated requests
+  - Handles cryptographic handshake protocol automatically
+- **ApiClient**: HTTP client for ACK-Lab platform API with JWT-based authentication
+- **HandshakeClient**: Manages the multi-step cryptographic handshake protocol between agents
+- **Challenge utilities**: Generate and verify random challenges for security
 
 ### Dependencies
 
-- `@a2a-js/sdk`: Base A2A protocol implementation
-- `agentcommercekit`: Agent commerce functionality
-- `jose`: JWT operations
-- `valibot`: Schema validation
+- `agentcommercekit`: Agent commerce functionality and DID resolution
+- `jose`: JWT operations and cryptographic functions
+- `valibot`: Schema validation and type safety
+- `uuid`: UUID generation for challenges
+- `safe-stable-stringify`: Deterministic JSON serialization
 
 ### Build System
 
 - Uses `tsdown` for building TypeScript to ESM
+- Single entry point at `src/index.ts`
 - Outputs to `dist/` with separate type definitions
 - ESM-only package (`"type": "module"`)
+- Vitest for testing with pass-through configuration for no tests

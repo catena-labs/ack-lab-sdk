@@ -8,11 +8,11 @@ import {
   type JwtString,
   type Resolvable
 } from "agentcommercekit"
-import * as v from "valibot"
-import { ApiClient } from "./api-client"
-import { generateChallenge } from "../utils/challenge"
 import { didUriSchema } from "agentcommercekit/schemas/valibot"
 import * as jose from "jose"
+import * as v from "valibot"
+import { generateChallenge } from "../utils/challenge"
+import { ApiClient } from "./api-client"
 import { verifyPresentationClaims } from "./credentials"
 
 export class HandshakeClient {

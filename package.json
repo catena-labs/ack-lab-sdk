@@ -1,6 +1,6 @@
 {
   "name": "@ack-lab/sdk",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "description": "Ack Lab SDK",
   "homepage": "https://github.com/catena-labs/ack-lab-sdk#readme",
   "bugs": "https://github.com/catena-labs/ack-lab-sdk/issues",
@@ -73,5 +73,8 @@
     "yoctocolors": "^2.1.1",
     "zod": "^4.0.17"
   },
-  "packageManager": "pnpm@10.14.0"
+  "packageManager": "pnpm@10.14.0",
+  "publishConfig": {
+    "access": "public"
+  }
 }

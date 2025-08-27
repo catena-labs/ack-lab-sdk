@@ -1,10 +1,10 @@
 import { serve } from "@hono/node-server"
 import { vValidator } from "@hono/valibot-validator"
+import { type JwtString } from "agentcommercekit"
+import { jwtStringSchema } from "agentcommercekit/schemas/valibot"
 import { Hono, type TypedResponse } from "hono"
 import { logger } from "hono/logger"
 import * as v from "valibot"
-import { type JwtString } from "agentcommercekit"
-import { jwtStringSchema } from "agentcommercekit/schemas/valibot"
 import type { AckLabSdk } from "../sdk"
 
 type AgentFn = (prompt: string) => Promise<string>

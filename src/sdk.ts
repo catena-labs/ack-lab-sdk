@@ -4,9 +4,8 @@ import {
   type JwtString,
   type Resolvable
 } from "agentcommercekit"
-
-import * as v from "valibot"
 import { jwtStringSchema } from "agentcommercekit/schemas/valibot"
+import * as v from "valibot"
 import { ApiClient, HandshakeClient, type ApiClientConfig } from "./core"
 
 type AgentCaller = (input: { message: string }) => Promise<string>
