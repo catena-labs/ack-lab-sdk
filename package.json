@@ -1,6 +1,6 @@
 {
   "name": "@ack-lab/sdk",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Ack Lab SDK",
   "homepage": "https://github.com/catena-labs/ack-lab-sdk#readme",
   "bugs": "https://github.com/catena-labs/ack-lab-sdk/issues",
@@ -36,6 +36,7 @@
     "lint:fix": "eslint . --fix",
     "nuke": "pnpm clean && git clean -xdf node_modules",
     "outdated": "npx npm-check-updates --interactive --format group",
+    "prepublishOnly": "pnpm run build",
     "test": "vitest"
   },
   "dependencies": {
