@@ -47,7 +47,7 @@ export class ApiClient {
   private _metadata: AgentMetadata | undefined = undefined
 
   constructor({ baseUrl, clientId, clientSecret }: ApiClientConfig) {
-    this.baseUrl = baseUrl ?? "http://localhost:4002"
+    this.baseUrl = baseUrl ?? "https://api.ack-lab.com"
     this.clientId = clientId
     this.clientSecret = clientSecret
   }
