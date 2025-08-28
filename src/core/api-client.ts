@@ -76,14 +76,17 @@ export class ApiClient {
   }
 
   async getPaymentRequest(
-    amount: number,
-    description?: string
+    minorUnits: number,
+    {
+      currencyCode = "USD",
+      description
+    }: { currencyCode?: string; description?: string } = {}
   ): Promise<{ paymentToken: string }> {
     return this.request(
       {
         method: "POST",
         path: "/v1/payment-requests",
-        body: { amount, description }
+        body: { amount: minorUnits, currencyCode, description }
       },
       v.object({ paymentToken: v.string() })
     )
