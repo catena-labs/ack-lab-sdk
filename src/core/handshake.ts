@@ -88,7 +88,9 @@ export class HandshakeClient {
     jwt: JwtString
     counterpartyDid: DidUri
   }> {
-    const { payload, counterpartyDid } = await this.verifyPresentation(jwt)
+    const { payload, counterpartyDid } = await this.verifyPresentation(jwt, {
+      validateChallenge: false
+    })
 
     const counterpartyChallenge = this.extractCounterpartyChallenge(payload)
 
@@ -121,7 +123,9 @@ export class HandshakeClient {
   async finalizeHandshake(
     jwt: JwtString
   ): Promise<{ counterpartyDid: DidUri; jwt: JwtString }> {
-    const { payload, counterpartyDid } = await this.verifyPresentation(jwt)
+    const { payload, counterpartyDid } = await this.verifyPresentation(jwt, {
+      validateChallenge: true
+    })
 
     const counterpartyChallenge = this.extractCounterpartyChallenge(payload)
 
@@ -219,9 +223,13 @@ export class HandshakeClient {
    * Verify a handshake response JWT and extract relevant information.
    * Internal method that validates the verifiable presentation and credentials.
    * @param jwt The handshake response JWT to verify
+   * @param opts.validateChallenge Whether to validate the challenge response.
    * @returns Object containing verified payload and counterparty DID
    */
-  private async verifyPresentation(jwt: JwtString): Promise<{
+  private async verifyPresentation(
+    jwt: JwtString,
+    { validateChallenge = false }: { validateChallenge?: boolean } = {}
+  ): Promise<{
     payload: Partial<JwtPayload>
     counterpartyDid: DidUri
   }> {
@@ -235,7 +243,9 @@ export class HandshakeClient {
       domain: did
     })
 
-    this.validateChallenge(counterpartyDid, payload)
+    if (validateChallenge) {
+      this.validateChallenge(counterpartyDid, payload)
+    }
 
     const credentials = verifiablePresentation.verifiableCredential ?? []
 
