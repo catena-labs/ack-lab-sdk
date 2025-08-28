@@ -278,9 +278,9 @@ export class HandshakeClient {
       payload
     )
 
-    if (expectedChallenge && expectedChallenge !== nonce) {
+    if (expectedChallenge !== nonce) {
       throw new Error(
-        `Expected challenge ${expectedChallenge} but got ${nonce ?? "undefined"}`
+        `Expected challenge ${expectedChallenge ?? "undefined"} but got ${nonce ?? "undefined"}`
       )
     }
   }
