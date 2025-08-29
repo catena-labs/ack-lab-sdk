@@ -5,20 +5,19 @@ import {
   type Resolvable
 } from "agentcommercekit"
 import { jwtStringSchema } from "agentcommercekit/schemas/valibot"
+import * as s from "standard-parse"
 import * as v from "valibot"
 import { ApiClient, HandshakeClient, type ApiClientConfig } from "./core"
 
-type AgentCaller = (input: { message: string }) => Promise<string>
+type MessageHandler<TInput> = (input: TInput) => Promise<unknown>
+type RequestHandler = (jwt: JwtString) => Promise<{ jwt: JwtString }>
 
-type AgentFn = (prompt: string) => Promise<string>
-type AgentHandler = (jwt: JwtString) => Promise<{ jwt: JwtString }>
-
-const responseSchema = v.object({
-  jwt: jwtStringSchema
+const agentInputSchema = v.object({
+  input: v.unknown()
 })
 
-const payloadSchema = v.object({
-  text: v.string()
+const agentResponseSchema = v.object({
+  result: v.unknown()
 })
 
 async function jwtFetch(url: string, jwt: JwtString) {
@@ -34,7 +33,10 @@ async function jwtFetch(url: string, jwt: JwtString) {
     throw new Error(`Failed to call agent: ${await result.text()}`)
   }
 
-  const { jwt: responseJwt } = v.parse(responseSchema, await result.json())
+  const { jwt: responseJwt } = v.parse(
+    v.object({ jwt: jwtStringSchema }),
+    await result.json()
+  )
 
   return responseJwt
 }
@@ -49,22 +51,33 @@ async function jwtFetch(url: string, jwt: JwtString) {
  *
  * @example Basic usage for calling another agent:
  * ```ts
+ * import * as v from "valibot"
+ *
  * const sdk = new AckLabSdk({
  *   clientId: "your-client-id",
  *   clientSecret: "your-client-secret"
  * })
  *
- * const callAgent = sdk.createAgentCaller("http://localhost:3000/chat")
+ * const callAgent = sdk.createAgentCaller(
+ *   "http://localhost:3000/chat",
+ *   v.object({ message: v.string() }),
+ *   v.string()
+ * )
  * const response = await callAgent({ message: "Hello, world!" })
  * console.log(response) // "Hello back!"
  * ```
  *
  * @example Basic usage for handling incoming requests:
  * ```ts
+ * import * as v from "valibot"
+ *
  * const sdk = new AckLabSdk(config)
- * const handler = sdk.createRequestHandler(async (message) => {
- *   return `You said: ${message}`
- * })
+ * const handler = sdk.createRequestHandler(
+ *   v.object({ message: v.string() }),
+ *   async (input) => {
+ *     return `You said: ${input.message}`
+ *   }
+ * )
  *
  * // Use with your HTTP server framework
  * app.post('/chat', async (req, res) => {
@@ -114,11 +127,19 @@ export class AckLabSdk {
    * The handshake flow is performed transparently when needed.
    *
    * @param url - The HTTP endpoint URL of the target agent (e.g., "http://localhost:3000/chat")
-   * @returns A function that takes a message and returns the agent's response
+   * @param inputSchema - Schema to validate and type the input data sent to the agent
+   * @param outputSchema - Schema to validate and type the response data from the agent
+   * @returns A function that takes typed input and returns the agent's typed response
    *
    * @example Basic usage:
    * ```ts
-   * const callMathAgent = sdk.createAgentCaller("http://localhost:3001/chat")
+   * import * as v from "valibot"
+   *
+   * const callMathAgent = sdk.createAgentCaller(
+   *   "http://localhost:3001/chat",
+   *   v.object({ message: v.string() }),
+   *   v.string()
+   * )
    *
    * const result = await callMathAgent({
    *   message: "What is 2 + 2?"
@@ -128,7 +149,13 @@ export class AckLabSdk {
    *
    * @example Using with AI SDK tools:
    * ```ts
-   * const callAgent = sdk.createAgentCaller("http://localhost:3001/chat")
+   * import * as v from "valibot"
+   *
+   * const callAgent = sdk.createAgentCaller(
+   *   "http://localhost:3001/chat",
+   *   v.object({ message: v.string() }),
+   *   v.string()
+   * )
    *
    * const additionTool = tool({
    *   description: "Call the math agent",
@@ -139,23 +166,30 @@ export class AckLabSdk {
    * })
    * ```
    */
-  createAgentCaller(url: string): AgentCaller {
+  createAgentCaller<TInput extends s.Schema, TOutput extends s.Schema>(
+    url: string,
+    inputSchema: TInput,
+    outputSchema: TOutput
+  ): (input: s.Input<TInput>) => Promise<s.Output<TOutput>> {
     let authedDid: string | undefined
 
     return async (input) => {
       authedDid ??= await this.authenticateAgent(url)
 
+      const validInput = s.parse(inputSchema, input)
+
       const { jwt: messageJwt } = await this.apiClient.sign({
         type: "message",
-        ...input
+        input: validInput
       })
 
       const responseJwt = await jwtFetch(url, messageJwt)
 
       const parsed = await verifyJwt(responseJwt, { resolver: this.resolver })
-      const { text } = v.parse(payloadSchema, parsed.payload)
 
-      return text
+      const { result } = v.parse(agentResponseSchema, parsed.payload)
+
+      return s.parse(outputSchema, result)
     }
   }
 
@@ -167,14 +201,20 @@ export class AckLabSdk {
    * manages the handshake flow and authentication state, only allowing messages
    * from properly authenticated agents.
    *
-   * @param runAgent - Function that processes authenticated messages and returns responses
+   * @param schema - Schema to validate and type the incoming message data
+   * @param handler - Function that processes authenticated typed messages and returns responses
    * @returns A handler function that processes incoming JWTs and returns responses
    *
    * @example With Express.js:
    * ```ts
-   * const handler = sdk.createRequestHandler(async (message) => {
-   *   return `Echo: ${message}`
-   * })
+   * import * as v from "valibot"
+   *
+   * const handler = sdk.createRequestHandler(
+   *   v.object({ message: v.string() }),
+   *   async (input) => {
+   *     return `Echo: ${input.message}`
+   *   }
+   * )
    *
    * app.post('/chat', async (req, res) => {
    *   try {
@@ -189,14 +229,19 @@ export class AckLabSdk {
    *
    * @example With Hono:
    * ```ts
-   * const handler = sdk.createRequestHandler(async (message) => {
-   *   // Use AI to generate response
-   *   const result = await generateText({
-   *     model: anthropic("claude-3-5-haiku-20241022"),
-   *     prompt: message
-   *   })
-   *   return result.text
-   * })
+   * import * as v from "valibot"
+   *
+   * const handler = sdk.createRequestHandler(
+   *   v.object({ message: v.string() }),
+   *   async ({ message }) => {
+   *     // Use AI to generate response
+   *     const result = await generateText({
+   *       model: anthropic("claude-3-5-haiku-20241022"),
+   *       prompt: message
+   *     })
+   *     return result.text
+   *   }
+   * )
    *
    * app.post('/chat', async (c) => {
    *   const { jwt } = await c.req.json()
@@ -205,7 +250,10 @@ export class AckLabSdk {
    * })
    * ```
    */
-  createRequestHandler(runAgent: AgentFn): AgentHandler {
+  createRequestHandler<T extends s.Schema>(
+    schema: T,
+    handler: MessageHandler<s.Output<T>>
+  ): RequestHandler {
     const authedDids = new Set<string>()
 
     return async (jwt) => {
@@ -234,14 +282,13 @@ export class AckLabSdk {
             )
           }
 
-          const { message } = v.parse(
-            v.object({ message: v.string() }),
-            payload
-          )
+          const { input } = v.parse(agentInputSchema, payload)
 
-          const text = await runAgent(message)
+          const validInput = s.parse(schema, input)
 
-          return this.apiClient.sign({ text })
+          const result = await handler(validInput)
+
+          return this.apiClient.sign({ result })
         }
       }
     }
