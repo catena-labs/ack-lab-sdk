@@ -81,25 +81,27 @@ export class ApiClient {
       currencyCode = "USD",
       description
     }: { currencyCode?: string; description?: string } = {}
-  ): Promise<{ paymentToken: string }> {
+  ): Promise<{ paymentToken: string; url?: string }> {
     return this.request(
       {
         method: "POST",
         path: "/v1/payment-requests",
         body: { amount: minorUnits, currencyCode, description }
       },
-      v.object({ paymentToken: v.string() })
+      v.object({ paymentToken: v.string(), url: v.optional(v.string()) })
     )
   }
 
-  async executePayment(paymentToken: string): Promise<{ receipt: JwtString }> {
+  async executePayment(
+    paymentToken: string
+  ): Promise<{ receipt: JwtString; url?: string }> {
     return this.request(
       {
         method: "POST",
         path: "/v1/payments",
         body: { paymentToken }
       },
-      v.object({ receipt: jwtStringSchema })
+      v.object({ receipt: jwtStringSchema, url: v.optional(v.string()) })
     )
   }
 
