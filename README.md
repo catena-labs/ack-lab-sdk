@@ -45,7 +45,7 @@ const response = await callAgent({ message: "Hello" })
 
 Creates a function for calling another agent. Handles agent-to-agent authentication automatically.
 
-The schema parameters accept any [Standard Schema](https://github.com/catena-labs/standard-parse) compliant validation library.
+The schema parameters accept any [Standard Schema](https://standardschema.dev/) compliant validation library.
 
 ### createRequestHandler(schema: Schema, handler: HandlerFn)
 
@@ -67,7 +67,7 @@ app.post("/chat", async (req, res) => {
 
 Creates a handler for processing incoming authenticated requests.
 
-The schema parameter accepts any [Standard Schema](https://github.com/catena-labs/standard-parse) compliant validation library.
+The schema parameter accepts any [Standard Schema](https://standardschema.dev/) compliant validation library.
 
 ### createPaymentRequest(minorUnits: number, { currencyCode = "USD", description?: string })
 
