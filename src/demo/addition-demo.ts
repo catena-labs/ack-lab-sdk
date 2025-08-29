@@ -6,6 +6,16 @@ import { z } from "zod"
 import { AckLabSdk } from "../sdk"
 import { serveAgent, serveAuthedAgent } from "./serve-agent"
 
+const ackLabSdkAgentA = new AckLabSdk({
+  clientId: "<client-id>",
+  clientSecret: "<client-secret>"
+})
+
+const ackLabSdkAgentB = new AckLabSdk({
+  clientId: "<client-id>",
+  clientSecret: "<client-secret>"
+})
+
 async function runAgentB(message: string) {
   const result = await generateText({
     model: anthropic("claude-3-5-haiku-20241022"),
@@ -28,12 +38,9 @@ async function runAgentB(message: string) {
   return result.text
 }
 
-const ackLabSdk = new AckLabSdk({
-  clientId: "<client-id>",
-  clientSecret: "<client-secret>"
-})
-
-const callAgent = ackLabSdk.createAgentCaller("http://localhost:7577/chat")
+const callAgent = ackLabSdkAgentA.createAgentCaller(
+  "http://localhost:7577/chat"
+)
 
 async function runAgentA(message: string) {
   const result = await generateText({
@@ -80,10 +87,7 @@ async function main() {
   serveAuthedAgent({
     port: 7577,
     runAgent: runAgentB,
-    sdk: new AckLabSdk({
-      clientId: "<client-id>",
-      clientSecret: "<client-secret>"
-    })
+    sdk: ackLabSdkAgentB
   })
 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
