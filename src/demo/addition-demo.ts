@@ -33,7 +33,11 @@ const ackLabSdk = new AckLabSdk({
   clientSecret: "<client-secret>"
 })
 
-const callAgent = ackLabSdk.createAgentCaller("http://localhost:7577/chat")
+const callAgent = ackLabSdk.createAgentCaller(
+  "http://localhost:7577/chat",
+  z.string(),
+  z.string()
+)
 
 async function runAgentA(message: string) {
   const result = await generateText({
@@ -50,7 +54,7 @@ async function runAgentA(message: string) {
         execute: async ({ message }) => {
           console.log(">>>> calling addition agent", message)
           try {
-            return await callAgent({ message })
+            return await callAgent(message)
           } catch (error) {
             console.error(
               ">>>> error calling addition agent:",

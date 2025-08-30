@@ -25,7 +25,7 @@ export function serveAuthedAgent({
 }: ServeAuthedAgentConfig) {
   console.log(`> Starting local server...`)
 
-  const agentHandler = sdk.createRequestHandler(runAgent)
+  const agentHandler = sdk.createRequestHandler(v.string(), runAgent)
 
   const app = new Hono()
 

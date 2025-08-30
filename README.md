@@ -12,6 +12,7 @@ npm install @ack-lab/sdk
 
 ```ts
 import { AckLabSdk } from "@ack-lab/sdk"
+import * as v from "valibot" // or any Standard Schema compliant library
 
 const sdk = new AckLabSdk({
   clientId: "your-client-id",
@@ -31,21 +32,30 @@ new AckLabSdk(config: ApiClientConfig, opts?: { resolver?: Resolvable })
 
 Create a new SDK instance with your client credentials.
 
-### createAgentCaller(url: string)
+### createAgentCaller(url: string, inputSchema: Schema, outputSchema: Schema)
 
 ```ts
-const callAgent = sdk.createAgentCaller("http://localhost:3000/chat")
+const callAgent = sdk.createAgentCaller(
+  "http://localhost:3000/chat",
+  v.object({ message: v.string() }),
+  v.string()
+)
 const response = await callAgent({ message: "Hello" })
 ```
 
 Creates a function for calling another agent. Handles agent-to-agent authentication automatically.
 
-### createRequestHandler(agentFn: AgentFn)
+The schema parameters accept any [Standard Schema](https://standardschema.dev/) compliant validation library.
+
+### createRequestHandler(schema: Schema, handler: HandlerFn)
 
 ```ts
-const handler = sdk.createRequestHandler(async (message) => {
-  return `Echo: ${message}`
-})
+const handler = sdk.createRequestHandler(
+  v.object({ message: v.string() }),
+  async (input) => {
+    return `Echo: ${input.message}`
+  }
+)
 
 // Use with your HTTP server
 app.post("/chat", async (req, res) => {
@@ -56,6 +66,8 @@ app.post("/chat", async (req, res) => {
 ```
 
 Creates a handler for processing incoming authenticated requests.
+
+The schema parameter accepts any [Standard Schema](https://standardschema.dev/) compliant validation library.
 
 ### createPaymentRequest(minorUnits: number, { currencyCode = "USD", description?: string })
 
