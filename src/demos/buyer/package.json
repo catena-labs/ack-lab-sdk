@@ -1,0 +1,26 @@
+{
+  "name": "buyer",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "buy": "tsx buy.ts",
+    "buy-agent": "tsx buy-agent.ts",
+    "negotiate": "tsx negotiate.ts"
+  },
+  "dependencies": {
+    "@ack-lab/sdk": "../../",
+    "@ai-sdk/openai": "^2.0.22",
+    "ai": "^5.0.14",
+    "dotenv": "^17.2.1",
+    "zod": "^4.0.17"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.5"
+  },
+  "packageManager": "pnpm@10.14.0"
+}
