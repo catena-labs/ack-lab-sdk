@@ -40,7 +40,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "agentcommercekit": "^0.9.1",
+    "agentcommercekit": "^0.10.0",
     "jose": "^6.0.12",
     "safe-stable-stringify": "^2.5.0",
     "standard-parse": "^0.3.0",
