@@ -1,5 +1,6 @@
 import { config } from "dotenv"
 import { AckLabSdk } from "@ack-lab/sdk"
+import * as v from "valibot"
 
 config()
 
@@ -8,7 +9,11 @@ const sdk = new AckLabSdk({
   clientSecret: process.env.ACK_LAB_CLIENT_SECRET!
 })
 
-const callAgent = sdk.createAgentCaller(`http://localhost:3000/api/fixed-price`)
+const callAgent = sdk.createAgentCaller(
+  `http://localhost:3000/api/fixed-price`,
+  v.object({ message: v.string(), data: v.optional(v.unknown()) }),
+  v.object({ message: v.string(), data: v.unknown() })
+)
 
 async function main() {
   console.log("Buying research on William Adama")

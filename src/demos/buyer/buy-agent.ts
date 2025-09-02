@@ -4,6 +4,7 @@ import { AckLabSdk } from "@ack-lab/sdk"
 import { generateText, tool, stepCountIs } from "ai"
 import { openai } from "@ai-sdk/openai"
 import { z } from "zod"
+import * as v from "valibot"
 
 config()
 
@@ -12,7 +13,11 @@ const sdk = new AckLabSdk({
   clientSecret: process.env.ACK_LAB_CLIENT_SECRET!
 })
 
-const callAgent = sdk.createAgentCaller(`http://localhost:3000/api/fixed-price`)
+const callAgent = sdk.createAgentCaller(
+  `http://localhost:3000/api/fixed-price`,
+  v.object({ message: v.optional(v.string()), data: v.optional(v.unknown()) }),
+  v.object({ message: v.string(), data: v.optional(v.unknown()) })
+)
 
 const buyResearchInput = z.object({
   name: z.string().describe("Name of the research to buy")

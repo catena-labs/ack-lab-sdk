@@ -12,23 +12,15 @@ import * as s from "standard-parse"
 import * as v from "valibot"
 import { ApiClient, HandshakeClient, type ApiClientConfig } from "./core"
 
-export interface MessageWrapper {
-  message: string
-  data?: unknown
-}
+type MessageHandler<TInput> = (input: TInput) => Promise<unknown>
+type RequestHandler = (jwt: JwtString) => Promise<{ jwt: JwtString }>
 
-type AgentCaller = (input: MessageWrapper) => Promise<MessageWrapper>
-
-type AgentFn = (input: MessageWrapper) => Promise<MessageWrapper>
-type AgentHandler = (jwt: JwtString) => Promise<{ jwt: JwtString }>
-
-const responseSchema = v.object({
-  jwt: jwtStringSchema
+const agentInputSchema = v.object({
+  input: v.unknown()
 })
 
-const payloadSchema = v.object({
-  message: v.string(),
-  data: v.optional(v.unknown())
+const agentResponseSchema = v.object({
+  result: v.unknown()
 })
 
 async function jwtFetch(url: string, jwt: JwtString) {
@@ -197,7 +189,10 @@ export class AckLabSdk {
       const responseJwt = await jwtFetch(url, messageJwt)
 
       const parsed = await verifyJwt(responseJwt, { resolver: this.resolver })
-      return v.parse(payloadSchema, parsed.payload)
+
+      const { result } = v.parse(agentResponseSchema, parsed.payload)
+
+      return s.parse(outputSchema, result)
     }
   }
 
@@ -290,17 +285,13 @@ export class AckLabSdk {
             )
           }
 
-          const { message, data } = v.parse(
-            v.object({
-              message: v.string(),
-              data: v.optional(v.unknown())
-            }),
-            payload
-          )
+          const { input } = v.parse(agentInputSchema, payload)
 
-          const agentResponse = await runAgent({ message, data })
+          const validInput = s.parse(schema, input)
 
-          return this.apiClient.sign(agentResponse)
+          const result = await handler(validInput)
+
+          return this.apiClient.sign({ result })
         }
       }
     }

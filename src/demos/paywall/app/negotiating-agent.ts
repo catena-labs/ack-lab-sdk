@@ -2,7 +2,6 @@ import { generateText, stepCountIs, tool } from "ai"
 import { openai } from "@ai-sdk/openai"
 import type { ModelMessage } from "ai"
 import { AckLabSdk } from "@ack-lab/sdk"
-import type { MessageWrapper } from "@ack-lab/sdk"
 import { z } from "zod"
 
 // Our negotiating agent has two products that it can sell
@@ -69,7 +68,13 @@ export const sdk = new AckLabSdk({
 })
 
 // This function will be called by the ACK Lab SDK to process incoming messages
-export async function processMessage({ message, data }: MessageWrapper) {
+export async function processMessage({
+  message,
+  data
+}: {
+  message: string
+  data?: unknown
+}) {
   console.log("Processing message: ", message)
 
   const { receipt } = (data as { receipt: string }) || {}
@@ -116,7 +121,7 @@ export async function processMessage({ message, data }: MessageWrapper) {
             currencyCode: "USD"
           })
 
-          paymentRequestToken = result.paymentToken
+          paymentRequestToken = result.paymentRequestToken
 
           console.log("Payment Request Token generated")
           console.log(paymentRequestToken)

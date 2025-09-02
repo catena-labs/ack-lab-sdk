@@ -1,11 +1,12 @@
 import { config } from "dotenv"
-import { AckLabSdk, MessageWrapper } from "@ack-lab/sdk"
-import { verifyPaymentToken, getDidResolver } from "agentcommercekit"
+import { AckLabSdk } from "@ack-lab/sdk"
+import { verifyPaymentRequestToken, getDidResolver } from "agentcommercekit"
 import type { PaymentRequest } from "agentcommercekit"
 
 import { generateText, tool, stepCountIs } from "ai"
 import { openai } from "@ai-sdk/openai"
 import { z } from "zod"
+import * as v from "valibot"
 import type { ModelMessage } from "ai"
 
 config()
@@ -15,7 +16,11 @@ const sdk = new AckLabSdk({
   clientSecret: process.env.ACK_LAB_CLIENT_SECRET!
 })
 
-const callAgent = sdk.createAgentCaller(`http://localhost:3000/api/negotiate`)
+const callAgent = sdk.createAgentCaller(
+  `http://localhost:3000/api/negotiate`,
+  v.object({ message: v.optional(v.string()), data: v.optional(v.unknown()) }),
+  v.object({ message: v.string(), data: v.optional(v.unknown()) })
+)
 
 type Negotiation = {
   state: "negotiating" | "price_agreed" | "complete"
@@ -31,37 +36,42 @@ type CounterpartyResponseData = {
 async function assessCounterOffer({
   message,
   data
-}: MessageWrapper): Promise<Negotiation> {
-  const { paymentRequestToken, research } = data as CounterpartyResponseData
+}: {
+  message: string
+  data?: unknown
+}): Promise<Negotiation> {
+  const { paymentRequestToken: unparsedPRT, research } =
+    data as CounterpartyResponseData
 
   if (research) {
     return {
       state: "complete",
       research,
-      paymentRequestToken
+      paymentRequestToken: unparsedPRT
     }
   }
 
-  if (paymentRequestToken) {
+  if (unparsedPRT) {
     //decide if we want to accept the offer
-    const { paymentRequest } = await verifyPaymentToken(paymentRequestToken, {
+    const { paymentRequest } = await verifyPaymentRequestToken(unparsedPRT, {
       resolver: getDidResolver()
     })
 
     console.log(paymentRequest)
 
     //20 USD at 6 decimals
-    if (paymentRequest.paymentOptions[0].amount < 20 * 1000000) {
+    //FIXME: I didn't have to cast this until 9/2/2025, and this is likely the wrong way to do it
+    if (Number(paymentRequest.paymentOptions[0].amount) < 20 * 1000000) {
       return {
         state: "price_agreed",
         research,
-        paymentRequestToken
+        paymentRequestToken: unparsedPRT
       }
     } else {
       return {
         state: "negotiating",
         research,
-        paymentRequestToken
+        paymentRequestToken: unparsedPRT
       }
     }
   }
@@ -70,8 +80,6 @@ async function assessCounterOffer({
 }
 
 async function main() {
-  const dataCache = new Map<string, any>()
-
   const messages: ModelMessage[] = [
     {
       role: "system",
