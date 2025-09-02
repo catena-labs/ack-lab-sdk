@@ -51,7 +51,9 @@ Whenever you want to either accept a buyer's offer or make a counteroffer of you
 call your createPaymentRequest tool first - this will create a payment request token
 that will be automatically sent to the buyer as part of your response.
 
-Always call the createPaymentRequest tool before responding to the buyer. The
+Always call the createPaymentRequest tool before responding to the buyer.
+If the buyer has offered a price less than full price, offer them at least
+some discount, but not too much.
 `
 
 // we will be passing these messages into the LLM a little further down the file
@@ -96,11 +98,12 @@ export async function processMessage({
     console.log("Receipt:", receipt)
 
     //FIXME: verify the receipt
-    //FIXME: how do we get the product ID here? It needs to be on the PRT really
+    //FIXME: how do we get the real product ID here? It needs to be on the PRT really
+    const productId = "adama"
 
     return {
       message: "Thank you for your purchase! Here is your research",
-      research: "This is the research you asked for"
+      research: products.find((product) => product.id === productId)?.content
     }
   } else {
     console.log("No receipt, here's the message from the buyer:")
@@ -116,7 +119,7 @@ export async function processMessage({
 
   const result = await generateText({
     model: openai("gpt-4o"),
-    stopWhen: stepCountIs(10),
+    stopWhen: stepCountIs(3),
     messages,
     tools: {
       createPaymentRequest: tool({
@@ -145,8 +148,7 @@ export async function processMessage({
 
   return {
     message: result.text,
-    paymentRequestToken,
-    research: result.text
+    paymentRequestToken
   }
 }
 

@@ -47,10 +47,9 @@ async function main() {
   console.log("\n\nExecuting payment...")
   const { receipt } = await sdk.executePayment(paymentRequestToken)
 
-  console.log("Payment made, here is the receipt:")
+  console.log("\n\nPayment made, sending receipt to seller...")
   console.log(receipt)
 
-  console.log("\n\nSending receipt to seller...")
   const { message, research } = await callAgent({
     message: "Hello I would like to buy research on William Adama",
     receipt

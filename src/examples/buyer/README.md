@@ -19,7 +19,7 @@ pnpm install
 
 Then run the examples:
 
-### buy.ts
+### Simple Purchase without an LLM
 
 The simplest of the flows, this example does not use an LLM, just the ACK Lab SDK to securely purchase a piece of content from a seller.
 
@@ -27,7 +27,7 @@ The simplest of the flows, this example does not use an LLM, just the ACK Lab SD
 pnpm run buy
 ```
 
-### buy-agent.ts
+### Simple Purchase triggered by an LLM
 
 This example uses an LLM to purchase a piece of content from a seller.
 
@@ -35,7 +35,7 @@ This example uses an LLM to purchase a piece of content from a seller.
 pnpm run buy-agent
 ```
 
-### negotiate.ts
+### Negotiated Purchase triggered by an LLM
 
 This example uses an LLM to purchase a piece of content from a seller, and negotiate the price.
 

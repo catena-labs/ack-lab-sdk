@@ -8,9 +8,9 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "buy": "tsx buy.ts",
-    "buy-agent": "tsx buy-agent.ts",
-    "negotiate": "tsx negotiate.ts"
+    "buy": "tsx scripts/buy.ts",
+    "buy-agent": "tsx scripts/buy-agent.ts",
+    "negotiate": "tsx scripts/negotiate.ts"
   },
   "dependencies": {
     "@ack-lab/sdk": "../../",
