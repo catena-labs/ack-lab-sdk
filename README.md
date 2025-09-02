@@ -80,13 +80,13 @@ const paymentRequest = await sdk.createPaymentRequest(100, {
 
 Creates a payment request for the specified amount, in minor units (e.g. cents for USD)
 
-### executePayment(paymentToken: string)
+### executePayment(paymentRequestToken: string)
 
 ```ts
-const result = await sdk.executePayment(paymentToken)
+const result = await sdk.executePayment(paymentRequestToken)
 ```
 
-Executes a payment using the provided payment token.
+Executes a payment using the provided payment request token.
 
 ## License (MIT)
 
