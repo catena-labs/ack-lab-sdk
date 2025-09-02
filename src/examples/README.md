@@ -18,3 +18,12 @@ The negotiate endpoint allows a buyer to negotiate with us for some content. It 
 ## Buyer
 
 The `buyer` directory contains 3 simple examples that show various ways to execute payments against the paywall example. They are intended to be executed against a running instance of the paywall example. For your convenience, there is a live running version of the paywall example at https://ack-lab-paywall.catenalabs.com/
+
+If you want to run these examples completely locally, you will need to spin up the paywall app first, then run the buyer examples.
+
+## Prelaunch Fix List
+
+- [ ] Stop using both z and valibot in the same examples
+- [ ] Probably use bignumber.js for all price math
+- [ ] On the seller side, we need to validate the receipt the buyer sends us is valid and actually correct for the product in question
+- [ ] We need a way to put a product ID in the payment request token

@@ -143,9 +143,6 @@ export class NegotiatingBuyerAgent {
                 receipt
               })
 
-              console.log("\n\npurchase response:")
-              console.log(purchaseResponse)
-
               return assessCounterOffer(purchaseResponse)
             } else {
               //we are either still negotiating or the negotiation is complete
