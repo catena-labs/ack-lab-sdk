@@ -6,8 +6,8 @@ This directory contains several examples of how to use the ACK Lab SDK to power 
 
 The `paywall` directory contains a very simple Next JS app that contains 2 API endpoints:
 
-/api/fixed-price - A chat endpoint that sells research at a fixed price
-/api/negotiate - A chat endpoint that sells research at a negotiated price
+- `/api/fixed-price` - A chat endpoint that sells research at a fixed price
+- `/api/negotiate` - A chat endpoint that sells research at a negotiated price
 
 Each endpoint allows an ACK Lab-registered agent to purchase insightful research about Battlestar Galactica characters. The ACK Lab SDK is used to implement each of the endpoints, and the Vercel AI SDK is used to perform any LLM calls.
 
