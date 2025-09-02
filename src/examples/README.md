@@ -27,3 +27,6 @@ If you want to run these examples completely locally, you will need to spin up t
 - [ ] Probably use bignumber.js for all price math
 - [ ] On the seller side, we need to validate the receipt the buyer sends us is valid and actually correct for the product in question
 - [ ] We need a way to put a product ID in the payment request token
+- [ ] The seller side should keep the message history in state (though this could be a third endpoint that builds on the /api/negotiate endpoint)
+- [ ] Too many pnpm-lock files
+- [ ] Negotiating buyer should not have a hard-coded price threshold in `assessCounterOffer`
