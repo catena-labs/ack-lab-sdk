@@ -3,6 +3,7 @@ import { openai } from "@ai-sdk/openai"
 import type { ModelMessage } from "ai"
 import { AckLabSdk } from "@ack-lab/sdk"
 import { z } from "zod"
+import * as v from "valibot"
 
 // Our negotiating agent has two products that it can sell
 const products = [
@@ -61,6 +62,23 @@ const messages: ModelMessage[] = [
   }
 ]
 
+//when our agent receives a message from the counterparty agent, it is of this shape
+const inputSchema = v.object({
+  message: v.string(),
+  receipt: v.optional(v.string())
+})
+
+type Input = v.InferInput<typeof inputSchema>
+
+//when our agent sends a message to the counterparty agent, it is of this shape
+const outputSchema = v.object({
+  message: v.string(),
+  paymentRequestToken: v.optional(v.string()),
+  research: v.optional(v.string())
+})
+
+type Output = v.InferOutput<typeof outputSchema>
+
 // Create an ACK Lab SDK instance with the client ID and client secret for the Seller Agent in ACK Lab
 export const sdk = new AckLabSdk({
   clientId: process.env.ACK_LAB_CLIENT_ID!,
@@ -70,14 +88,9 @@ export const sdk = new AckLabSdk({
 // This function will be called by the ACK Lab SDK to process incoming messages
 export async function processMessage({
   message,
-  data
-}: {
-  message: string
-  data?: unknown
-}) {
+  receipt
+}: Input): Promise<Output> {
   console.log("Processing message: ", message)
-
-  const { receipt } = (data as { receipt: string }) || {}
 
   if (receipt) {
     console.log("Receipt:", receipt)
@@ -87,9 +100,7 @@ export async function processMessage({
 
     return {
       message: "Thank you for your purchase! Here is your research",
-      data: {
-        research: "This is the research you asked for"
-      }
+      research: "This is the research you asked for"
     }
   } else {
     console.log("No receipt, here's the message from the buyer:")
@@ -134,9 +145,11 @@ export async function processMessage({
 
   return {
     message: result.text,
-    data: {
-      paymentRequestToken,
-      message: result.text
-    }
+    paymentRequestToken,
+    research: result.text
   }
 }
+
+// Create an agent handler that will process incoming messages
+// This uses the ACK Lab SDK to provide a secure communication channel between the buyer and the seller
+export const handler = sdk.createRequestHandler(inputSchema, processMessage)

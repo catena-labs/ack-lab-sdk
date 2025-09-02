@@ -1,4 +1,5 @@
 import { AckLabSdk } from "@ack-lab/sdk"
+import * as v from "valibot"
 
 // we only sell a single product
 const product = {
@@ -10,20 +11,28 @@ const product = {
     "This is the super secret document you just paid all that money for. TL;DR: William Adama has no secrets."
 }
 
+//when our agent receives a message from the counterparty agent, it is of this shape
+const inputSchema = v.object({
+  receipt: v.optional(v.string())
+})
+
+type Input = v.InferInput<typeof inputSchema>
+
+//when our agent sends a message to the counterparty agent, it is of this shape
+const outputSchema = v.object({
+  message: v.string(),
+  paymentRequestToken: v.optional(v.string()),
+  research: v.optional(v.string())
+})
+
+type Output = v.InferOutput<typeof outputSchema>
+
 export const sdk = new AckLabSdk({
   clientId: process.env.ACK_LAB_CLIENT_ID!,
   clientSecret: process.env.ACK_LAB_CLIENT_SECRET!
 })
 
-export async function processMessage({
-  message,
-  data
-}: {
-  message?: string
-  data?: unknown
-}) {
-  const { receipt } = (data as { receipt: string }) || {}
-
+export async function processMessage({ receipt }: Input): Promise<Output> {
   if (receipt) {
     console.log("Counterparty has sent a receipt:")
     console.log(receipt)
@@ -32,9 +41,7 @@ export async function processMessage({
 
     return {
       message: `Thank you for your purchase! Here is your research`,
-      data: {
-        research: product.content
-      }
+      research: product.content
     }
   } else {
     console.log("No receipt was sent, sending back a payment request token")
@@ -50,9 +57,11 @@ export async function processMessage({
 
     return {
       message: `The product is available for $${product.price}. Here is a Payment Request Token you can use to purchase it.`,
-      data: {
-        paymentRequestToken
-      }
+      paymentRequestToken
     }
   }
 }
+
+// Create an agent handler that will process incoming messages
+// This uses the ACK Lab SDK to provide a secure communication channel between the buyer and the seller
+export const handler = sdk.createRequestHandler(inputSchema, processMessage)

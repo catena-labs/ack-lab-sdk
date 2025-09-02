@@ -9,20 +9,37 @@ const sdk = new AckLabSdk({
   clientSecret: process.env.ACK_LAB_CLIENT_SECRET!
 })
 
+// When our agent sends messages to the counterparty agent, the messages are of this shape
+// There is always a message, and sometimes a receipt
+const requestSchema = v.object({
+  message: v.string(),
+  receipt: v.optional(v.string())
+})
+
+// When the counterparty agent sends messages to our agent, the messages are of this shape
+// There is always a message, and sometimes a payment request token or the research itself
+const responseSchema = v.object({
+  message: v.string(),
+  paymentRequestToken: v.optional(v.string()),
+  research: v.optional(v.string())
+})
+
 const callAgent = sdk.createAgentCaller(
   `http://localhost:3000/api/fixed-price`,
-  v.object({ message: v.string(), data: v.optional(v.unknown()) }),
-  v.object({ message: v.string(), data: v.unknown() })
+  requestSchema,
+  responseSchema
 )
 
 async function main() {
   console.log("Buying research on William Adama")
 
-  const { data } = await callAgent({
+  const { paymentRequestToken } = await callAgent({
     message: "Hello I would like to buy research on William Adama"
   })
 
-  const { paymentRequestToken } = data as any
+  if (!paymentRequestToken) {
+    throw new Error("No payment request token received")
+  }
 
   console.log("\n\nPayment Request Token received:")
   console.log(paymentRequestToken)
@@ -34,17 +51,15 @@ async function main() {
   console.log(receipt)
 
   console.log("\n\nSending receipt to seller...")
-  const { message, data: docData } = await callAgent({
+  const { message, research } = await callAgent({
     message: "Hello I would like to buy research on William Adama",
-    data: {
-      receipt
-    }
+    receipt
   })
 
   console.log("\n\nSeller final response: ")
   console.log(message)
   console.log("research:")
-  console.log(docData)
+  console.log(research)
 }
 
 main()

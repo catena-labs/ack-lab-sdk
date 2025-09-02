@@ -1,7 +1,6 @@
 import { config } from "dotenv"
 import { AckLabSdk } from "@ack-lab/sdk"
 import { verifyPaymentRequestToken, getDidResolver } from "agentcommercekit"
-import type { PaymentRequest } from "agentcommercekit"
 
 import { generateText, tool, stepCountIs } from "ai"
 import { openai } from "@ai-sdk/openai"
@@ -16,62 +15,69 @@ const sdk = new AckLabSdk({
   clientSecret: process.env.ACK_LAB_CLIENT_SECRET!
 })
 
+// When our agent sends messages to the counterparty agent, the messages are of this shape
+// There is always a message, and sometimes a receipt
+const requestSchema = v.object({
+  message: v.string(),
+  receipt: v.optional(v.string())
+})
+
+// When the counterparty agent sends messages to our agent, the messages are of this shape
+// There is always a message, and sometimes a payment request token or the research itself
+const responseSchema = v.object({
+  message: v.string(),
+  paymentRequestToken: v.optional(v.string()),
+  research: v.optional(v.string())
+})
+
+type Payload = v.InferInput<typeof responseSchema>
+
 const callAgent = sdk.createAgentCaller(
   `http://localhost:3000/api/negotiate`,
-  v.object({ message: v.optional(v.string()), data: v.optional(v.unknown()) }),
-  v.object({ message: v.string(), data: v.optional(v.unknown()) })
+  requestSchema,
+  responseSchema
 )
 
 type Negotiation = {
   state: "negotiating" | "price_agreed" | "complete"
   research: any
-  paymentRequestToken: string
-}
-
-type CounterpartyResponseData = {
-  paymentRequestToken: string
-  research: string
+  paymentRequestToken?: string
 }
 
 async function assessCounterOffer({
-  message,
-  data
-}: {
-  message: string
-  data?: unknown
-}): Promise<Negotiation> {
-  const { paymentRequestToken: unparsedPRT, research } =
-    data as CounterpartyResponseData
-
+  paymentRequestToken,
+  research
+}: Payload): Promise<Negotiation> {
   if (research) {
     return {
       state: "complete",
       research,
-      paymentRequestToken: unparsedPRT
+      paymentRequestToken
     }
   }
 
-  if (unparsedPRT) {
+  if (paymentRequestToken) {
     //decide if we want to accept the offer
-    const { paymentRequest } = await verifyPaymentRequestToken(unparsedPRT, {
-      resolver: getDidResolver()
-    })
+    const { paymentRequest } = await verifyPaymentRequestToken(
+      paymentRequestToken,
+      {
+        resolver: getDidResolver()
+      }
+    )
 
-    console.log(paymentRequest)
-
-    //20 USD at 6 decimals
     //FIXME: I didn't have to cast this until 9/2/2025, and this is likely the wrong way to do it
+    //20 USD at 6 decimals
     if (Number(paymentRequest.paymentOptions[0].amount) < 20 * 1000000) {
       return {
         state: "price_agreed",
         research,
-        paymentRequestToken: unparsedPRT
+        paymentRequestToken
       }
     } else {
       return {
         state: "negotiating",
         research,
-        paymentRequestToken: unparsedPRT
+        paymentRequestToken
       }
     }
   }
@@ -145,7 +151,10 @@ async function main() {
           console.log("\n\nnegotiation state:")
           console.log(negotiation)
 
-          if (negotiation.state === "price_agreed") {
+          if (
+            negotiation.state === "price_agreed" &&
+            negotiation.paymentRequestToken
+          ) {
             console.log(
               "\n\nwe have reached a price agreement, execute the payment"
             )
@@ -159,9 +168,7 @@ async function main() {
 
             const purchaseResponse = await callAgent({
               message: `Here is my receipt for purchasing research on ${name}`,
-              data: {
-                receipt
-              }
+              receipt
             })
 
             console.log("\n\npurchase response:")
