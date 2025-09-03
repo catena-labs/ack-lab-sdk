@@ -154,7 +154,7 @@ export class HandshakeClient {
     payload: Partial<JwtPayload>
     counterpartyDid: DidUri
   }> {
-    const { did } = await this.apiClient.getAgentMetadata()
+    const { did } = await this.apiClient.getMetadata()
 
     const { payload, issuer: counterpartyDid } = await verifyJwt(jwt, {
       resolver: this.resolver,
@@ -233,7 +233,7 @@ export class HandshakeClient {
     payload: Partial<JwtPayload>
     counterpartyDid: DidUri
   }> {
-    const { did } = await this.apiClient.getAgentMetadata()
+    const { did } = await this.apiClient.getMetadata()
 
     const {
       payload,

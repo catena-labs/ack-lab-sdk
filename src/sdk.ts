@@ -297,22 +297,20 @@ export class AckLabSdk {
   /**
    * Create a payment request for the agent.
    *
-   * @param minorUnits - The amount in minor units to request (e.g. 1000 for $10 in USD)
-   * @param currencyCode - The currency code to request (e.g. "USD")
-   * @param description - Optional description of the payment request
+   * @param params - The parameters for the payment request
+   * @param params.id - The ID of the payment request
+   * @param params.amount - The amount to request in minor units (e.g. 1000 for $10 in USD)
+   * @param params.currencyCode - The currency code to request (e.g. "USD")
+   * @param params.description - Optional description of the payment request
    * @returns Promise resolving to the payment request token
    */
-  async createPaymentRequest(
-    minorUnits: number,
-    {
-      currencyCode = "USD",
-      description
-    }: { currencyCode?: string; description?: string } = {}
-  ) {
-    return this.apiClient.getPaymentRequest(minorUnits, {
-      currencyCode,
-      description
-    })
+  async createPaymentRequest(params: {
+    id: string
+    amount: number
+    currencyCode?: string
+    description?: string
+  }) {
+    return this.apiClient.createPaymentRequest(params)
   }
 
   /**
