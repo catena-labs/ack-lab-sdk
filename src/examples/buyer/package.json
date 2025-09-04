@@ -10,6 +10,8 @@
   "scripts": {
     "buy": "tsx scripts/buy.ts",
     "buy-agent": "tsx scripts/buy-agent.ts",
+    "deterministic": "tsx scripts/deterministic.ts",
+    "images": "tsx scripts/images.ts",
     "negotiate": "tsx scripts/negotiate.ts"
   },
   "dependencies": {
