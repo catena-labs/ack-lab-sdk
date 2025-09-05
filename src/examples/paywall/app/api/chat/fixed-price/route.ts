@@ -1,7 +1,7 @@
-import { handler } from "../../negotiating-agent"
+import { handler } from "./agent"
 
 // This is the endpoint that the buyer will call to purchase research
-// Almost all of the actual work is delegated to the processMessage function in negotiating-agent.ts
+// Almost all of the actual work is delegated to the processMessage function in agent.ts
 export async function POST(req: Request) {
   const body = await req.json()
 

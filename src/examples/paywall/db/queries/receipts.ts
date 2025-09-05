@@ -3,6 +3,12 @@ import { receiptsTable } from "@/db/schema"
 import { eq, sql } from "drizzle-orm"
 import { getDbPaymentRequestToken } from "./payment-request-tokens"
 
+/**
+ * Gets a receipt from the database, or creates it if it doesn't exist.
+ * A Receipt will only be created if a PaymentRequestToken exists for it.
+ * @param receiptId
+ * @returns
+ */
 export async function getOrCreateDbReceipt(receiptId: string) {
   const receipt = await db
     .select()
@@ -29,7 +35,10 @@ export async function getOrCreateDbReceipt(receiptId: string) {
   return receipt[0]
 }
 
-//each time a receipt is used, decrement the credits remaining
+/**
+ * Each time a receipt is used, decrement the credits remaining
+ * @param receiptId
+ */
 export async function consumeReceiptCredit(receiptId: string) {
   await db
     .update(receiptsTable)

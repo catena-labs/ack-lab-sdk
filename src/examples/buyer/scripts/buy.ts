@@ -25,7 +25,7 @@ const responseSchema = v.object({
 })
 
 const callAgent = sdk.createAgentCaller(
-  `http://localhost:3000/api/fixed-price`,
+  `${process.env.PAYWALL_HOST}/api/chat/fixed-price`,
   requestSchema,
   responseSchema
 )

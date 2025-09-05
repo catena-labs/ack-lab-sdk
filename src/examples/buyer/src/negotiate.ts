@@ -57,7 +57,7 @@ export class NegotiatingBuyerAgent {
     ]
 
     this.callAgent = this.sdk.createAgentCaller(
-      `http://localhost:3000/api/negotiate`,
+      `${process.env.PAYWALL_HOST}/api/chat/negotiate`,
       requestSchema,
       responseSchema
     )

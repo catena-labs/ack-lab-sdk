@@ -28,8 +28,6 @@ export async function POST(req: Request) {
     return new Response("Invalid receipt", { status: 400 })
   }
 
-  console.log("Got receipt ID: ", receiptId)
-
   //then, get or create the receipt and check if it has credits remaining
   const receipt = await getOrCreateDbReceipt(receiptId)
 
