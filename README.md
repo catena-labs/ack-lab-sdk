@@ -90,6 +90,15 @@ const result = await sdk.executePayment(paymentRequestToken)
 
 Executes a payment using the provided payment request token.
 
+### verifyPaymentReceipt(receipt: string)
+
+```ts
+const { receipt, paymentRequestId } =
+  await sdk.verifyPaymentReceipt(receiptString)
+```
+
+Verifies a payment receipt and returns the verified receipt along with the associated payment request ID.
+
 ## License (MIT)
 
 Copyright (c) 2025 [Catena Labs, Inc](https://catenalabs.com). See [`LICENSE`](./LICENSE).
