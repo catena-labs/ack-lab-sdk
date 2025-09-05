@@ -4,10 +4,13 @@ This directory contains several examples of how to use the ACK Lab SDK to power 
 
 ## Paywall
 
-The `paywall` directory contains a very simple Next JS app that contains 2 API endpoints:
+The `paywall` directory contains a very simple Next JS app that contains various API endpoints:
 
-- `/api/fixed-price` - A chat endpoint that sells research at a fixed price
-- `/api/negotiate` - A chat endpoint that sells research at a negotiated price
+- `/api/chat/fixed-price` - A chat endpoint that sells research at a fixed price
+- `/api/chat/negotiate` - A chat endpoint that sells research at a negotiated price
+- `/api/fixed-price` - A simple non-chat HTTP endpoint that sells research at a fixed price
+- `/api/images/buy` - An API endpoint that sells image generation credits via a Payment Request Token
+- `/api/images/generate` - An API endpoint that generates images when a buyer presents a valid receipt
 
 Each endpoint allows an ACK Lab-registered agent to purchase insightful research about Battlestar Galactica characters. The ACK Lab SDK is used to implement each of the endpoints, and the Vercel AI SDK is used to perform any LLM calls.
 

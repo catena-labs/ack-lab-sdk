@@ -8,9 +8,9 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "buy": "tsx scripts/buy.ts",
     "buy-agent": "tsx scripts/buy-agent.ts",
-    "deterministic": "tsx scripts/deterministic.ts",
+    "buy-chat": "tsx scripts/buy-chat.ts",
+    "fixed-price": "tsx scripts/fixed-price.ts",
     "images": "tsx scripts/images.ts",
     "negotiate": "tsx scripts/negotiate.ts"
   },

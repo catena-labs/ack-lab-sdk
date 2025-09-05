@@ -19,15 +19,35 @@ pnpm install
 
 Then run the examples:
 
-### Simple Purchase without an LLM
+## Non-Chat Examples
+
+### One-time Purchase via HTTP endpoint
+
+This example purchases a piece of content from a seller via a simple HTTP endpoint.
+
+```bash
+pnpm run fixed-price
+```
+
+### Bulk Purchase of images via HTTP endpoint
+
+This example purchases a piece of content from a seller via a simple HTTP endpoint.
+
+```bash
+pnpm run images
+```
+
+## Chat Examples
+
+### Simple Purchase via secure chat without an LLM
 
 The simplest of the flows, this example does not use an LLM, just the ACK Lab SDK to securely purchase a piece of content from a seller.
 
 ```bash
-pnpm run buy
+pnpm run buy-chat
 ```
 
-### Simple Purchase triggered by an LLM
+### Simple Purchase via secure chat triggered by an LLM
 
 This example uses an LLM to purchase a piece of content from a seller.
 
@@ -35,7 +55,7 @@ This example uses an LLM to purchase a piece of content from a seller.
 pnpm run buy-agent
 ```
 
-### Negotiated Purchase triggered by an LLM
+### Negotiated Purchase via secure chat triggered by an LLM
 
 This example uses an LLM to purchase a piece of content from a seller, and negotiate the price.
 

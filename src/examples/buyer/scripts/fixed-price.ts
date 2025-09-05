@@ -9,7 +9,7 @@ const sdk = new AckLabSdk({
   clientSecret: process.env.ACK_LAB_CLIENT_SECRET!
 })
 
-const endpoint = `${process.env.PAYWALL_HOST}/api/http-402`
+const endpoint = `${process.env.PAYWALL_HOST}/api/fixed-price`
 const expectedPrice = 10 //10 SOL
 
 async function main() {
