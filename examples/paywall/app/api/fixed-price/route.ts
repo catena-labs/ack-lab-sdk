@@ -3,7 +3,7 @@
  * If the buyer sends a receipt, it will validate it and return the digital product.
  * If not, it will send a payment request token.
  */
-import { AckLabSdk } from "../../../../../sdk"
+import { AckLabSdk } from "@ack-lab/sdk"
 import * as v from "valibot"
 import {
   verifyPaymentReceipt,
@@ -76,5 +76,5 @@ async function isReceiptCorrect(receiptJwt: string): Promise<boolean> {
   const { amount } = paymentRequest.paymentOptions[0]
 
   //FIXME: it is quite surprising to have to multiply by 10000 here
-  return amount === productPrice * 10000
+  return BigInt(amount) === BigInt(productPrice * 10000)
 }

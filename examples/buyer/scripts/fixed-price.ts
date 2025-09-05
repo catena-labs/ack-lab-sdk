@@ -71,8 +71,8 @@ async function checkPaymentRequestToken(paymentRequestToken: string) {
   const paymentOption = paymentRequest.paymentOptions[0]
 
   return (
-    Number(paymentOption.amount) ===
-    expectedPrice * Math.pow(10, paymentOption.decimals)
+    BigInt(paymentOption.amount) ===
+    BigInt(expectedPrice * Math.pow(10, paymentOption.decimals))
   )
 }
 

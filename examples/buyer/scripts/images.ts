@@ -98,10 +98,10 @@ async function checkPaymentRequestToken(paymentRequestToken: string) {
   const paymentOption = paymentRequest.paymentOptions[0]
 
   return (
-    Number(paymentOption.amount) ===
-    expectedPricePerImage *
+    BigInt(paymentOption.amount) ===
+    BigInt(expectedPricePerImage *
       imagesToPurchase *
-      Math.pow(10, paymentOption.decimals)
+      Math.pow(10, paymentOption.decimals))
   )
 }
 

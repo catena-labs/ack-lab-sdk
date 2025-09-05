@@ -26,16 +26,14 @@ If you want to run these examples completely locally, you will need to spin up t
 
 ## Prelaunch Fix List
 
-- [ ] Stop using both z and valibot in the same examples
-- [ ] Probably use big.js for all price math
-- [ ] On the seller side, we need to validate the receipt the buyer sends us is valid and actually correct for the product in question
-- [ ] We need a way to put a product ID in the payment request token
-- [ ] The seller side should keep the message history in state (though this could be a third endpoint that builds on the /api/negotiate endpoint)
-- [ ] Too many pnpm-lock files
-- [ ] Negotiating buyer should not have a hard-coded price threshold in `assessCounterOffer`
-- [ ] Easy way to track if a receipt has already been used? Sometimes we probably want that, other times not.
-- [ ] It's syntactically valid to call verifyPaymentRequestToken without passing in a resolver, but this always seems to throw
-- [ ] Constructing a PRT I pass in a decimals = 2 dollar amount (e.g. 10 ^ 2) but on Receipt I get decimals = 6 (e.g. 10 ^ 6)
+- [ ] P1: On the seller side, we need to validate the receipt the buyer sends us is valid and actually correct for the product in question
+- [ ] P1: We need a way to put a product ID in the payment request token
+- [x] P1: Probably use bigint for all price math
+- [ ] P2: Stop using both z and valibot in the same examples
+- [ ] P2: The seller side should keep the message history in state (though this could be a third endpoint that builds on the /api/negotiate endpoint)
+- [ ] P2: Negotiating buyer should not have a hard-coded price threshold in `assessCounterOffer`
+- [ ] P2: Constructing a PRT I pass in a decimals = 2 dollar amount (e.g. 10 ^ 2) but on Receipt I get decimals = 6 (e.g. 10 ^ 6)
+- [ ] P3: It's syntactically valid to call verifyPaymentRequestToken without passing in a resolver, but this always seems to throw
 
 ## Future Examples
 
@@ -51,5 +49,4 @@ If you want to run these examples completely locally, you will need to spin up t
 
 ## Thoughts / Questions
 
-- Do we have a suggested pattern for "burning" a receipt after it has been used?
 - Our PRT endpoint in ACK Lab turns USD into SOL - seems non-obvious to devs

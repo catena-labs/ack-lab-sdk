@@ -193,7 +193,9 @@ async function assessCounterOffer({
 
     //FIXME: I didn't have to cast this until 9/2/2025, and this is likely the wrong way to do it
     //20 USD at 6 decimals
-    if (Number(paymentRequest.paymentOptions[0].amount) < 20 * 1000000) {
+    if (
+      BigInt(paymentRequest.paymentOptions[0].amount) < BigInt(20 * 1000000)
+    ) {
       return {
         state: "price_agreed",
         research,
