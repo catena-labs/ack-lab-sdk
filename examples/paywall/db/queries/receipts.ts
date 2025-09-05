@@ -1,11 +1,11 @@
 import { db } from "@/db"
 import { receiptsTable } from "@/db/schema"
 import { eq, sql } from "drizzle-orm"
-import { getDbPaymentRequestToken } from "./payment-request-tokens"
+import { getDbPaymentRequest } from "./payment-requests"
 
 /**
  * Gets a receipt from the database, or creates it if it doesn't exist.
- * A Receipt will only be created if a PaymentRequestToken exists for it.
+ * A Receipt will only be created if a PaymentRequest exists for it.
  * @param receiptId
  * @returns
  */
@@ -17,10 +17,10 @@ export async function getOrCreateDbReceipt(receiptId: string) {
 
   if (receipt.length === 0) {
     //check to see if we ever made a PRT for this receipt
-    const prt = await getDbPaymentRequestToken(receiptId)
+    const prt = await getDbPaymentRequest(receiptId)
 
     if (!prt) {
-      throw new Error("Payment request token not found")
+      throw new Error("Payment request not found")
     }
 
     const credits = prt.metadata!.credits

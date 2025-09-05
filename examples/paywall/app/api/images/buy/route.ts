@@ -4,7 +4,7 @@
 import * as v from "valibot"
 import { AckLabSdk } from "@ack-lab/sdk"
 import { db } from "@/db"
-import { paymentRequestTokensTable } from "@/db/schema"
+import { paymentRequestsTable } from "@/db/schema"
 import { decodeJwt } from "jose"
 
 const requestSchema = v.object({
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
 
   //save the payment request token to the database
   await db
-    .insert(paymentRequestTokensTable)
+    .insert(paymentRequestsTable)
     .values({ price, id: prtId, metadata: { credits: count } })
 
   return new Response(paymentRequestToken, { status: 402 })

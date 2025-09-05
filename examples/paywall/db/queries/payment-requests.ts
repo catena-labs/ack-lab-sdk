@@ -1,5 +1,5 @@
 import { db } from "@/db"
-import { paymentRequestTokensTable } from "@/db/schema"
+import { paymentRequestsTable } from "@/db/schema"
 import { eq } from "drizzle-orm"
 
 /**
@@ -7,11 +7,11 @@ import { eq } from "drizzle-orm"
  * @param id
  * @returns
  */
-export async function getDbPaymentRequestToken(id: string) {
+export async function getDbPaymentRequest(id: string) {
   const token = await db
     .select()
-    .from(paymentRequestTokensTable)
-    .where(eq(paymentRequestTokensTable.id, id))
+    .from(paymentRequestsTable)
+    .where(eq(paymentRequestsTable.id, id))
 
   if (token.length === 0) {
     return null
