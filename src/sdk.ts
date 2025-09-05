@@ -305,7 +305,7 @@ export class AckLabSdk {
    * @returns Promise resolving to the payment request token
    */
   async createPaymentRequest(params: {
-    id: string
+    id?: string
     amount: number
     currencyCode?: string
     description?: string

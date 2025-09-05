@@ -69,7 +69,7 @@ Creates a handler for processing incoming authenticated requests.
 
 The schema parameter accepts any [Standard Schema](https://standardschema.dev/) compliant validation library.
 
-### createPaymentRequest(params: { id: string, amount: number, currencyCode?: string, description?: string })
+### createPaymentRequest(params: { id?: string, amount: number, currencyCode?: string, description?: string })
 
 ```ts
 const paymentRequest = await sdk.createPaymentRequest({

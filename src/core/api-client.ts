@@ -81,7 +81,7 @@ export class ApiClient {
     currencyCode = "USD",
     description
   }: {
-    id: string
+    id?: string
     amount: number
     currencyCode?: string
     description?: string
