@@ -52,7 +52,7 @@ export class ApiClient {
     this.clientSecret = clientSecret
   }
 
-  async getAgentMetadata(): Promise<AgentMetadata> {
+  async getMetadata(): Promise<AgentMetadata> {
     // Metadata does not change for an agent, so we cache it
     if (this._metadata) {
       return this._metadata
@@ -75,18 +75,22 @@ export class ApiClient {
     )
   }
 
-  async getPaymentRequest(
-    minorUnits: number,
-    {
-      currencyCode = "USD",
-      description
-    }: { currencyCode?: string; description?: string } = {}
-  ): Promise<{ paymentRequestToken: string; url?: string }> {
+  async createPaymentRequest({
+    id,
+    amount,
+    currencyCode = "USD",
+    description
+  }: {
+    id?: string
+    amount: number
+    currencyCode?: string
+    description?: string
+  }): Promise<{ paymentRequestToken: string; url?: string }> {
     return this.request(
       {
         method: "POST",
         path: "/v1/payment-requests",
-        body: { amount: minorUnits, currencyCode, description }
+        body: { id, amount, currencyCode, description }
       },
       v.object({ paymentRequestToken: v.string(), url: v.optional(v.string()) })
     )
@@ -140,13 +144,6 @@ export class ApiClient {
         body: { aud, challenge, nonce }
       },
       v.object({ presentation: jwtStringSchema })
-    )
-  }
-
-  async verify(challenge: string): Promise<null> {
-    return this.request(
-      { method: "POST", path: "/v1/verify", body: { challenge } },
-      v.null()
     )
   }
 

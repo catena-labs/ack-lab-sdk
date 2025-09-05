@@ -69,10 +69,12 @@ Creates a handler for processing incoming authenticated requests.
 
 The schema parameter accepts any [Standard Schema](https://standardschema.dev/) compliant validation library.
 
-### createPaymentRequest(minorUnits: number, { currencyCode = "USD", description?: string })
+### createPaymentRequest(params: { id?: string, amount: number, currencyCode?: string, description?: string })
 
 ```ts
-const paymentRequest = await sdk.createPaymentRequest(100, {
+const paymentRequest = await sdk.createPaymentRequest({
+  id: crypto.randomUUID(),
+  amount: 100,
   currencyCode: "USD",
   description: "Service fee"
 })
