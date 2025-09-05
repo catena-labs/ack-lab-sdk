@@ -22,10 +22,13 @@ const responseSchema = v.object({
   research: v.optional(v.string())
 })
 
+//this is how much our agent should expect to pay at full price
+const expectedFullPrice = 20 // in USD
+
 const systemPrompt = `You are a helpful assistant who can buy research for a given person.
 Use your buyResearch tool to purchase research.
-The research in question is usually sold for $20,
-but see if you can get it for $15 or less.
+The research in question is usually sold for ${expectedFullPrice} USD,
+but see if you can get it for ${expectedFullPrice - 5} USD or less.
 
 IMPORTANT: always use your buyResearch tool multiple times in a row until
 the negotiation is complete, you are not negotiating with the user but
@@ -191,10 +194,11 @@ async function assessCounterOffer({
       }
     )
 
-    //FIXME: I didn't have to cast this until 9/2/2025, and this is likely the wrong way to do it
-    //20 USD at 6 decimals
+    //This payment option is known to always be a testname USD-parity currency with 6dp
+    //Obviously, this is brittle and will need to be updated when we leave developer preview
     if (
-      BigInt(paymentRequest.paymentOptions[0].amount) < BigInt(20 * 1000000)
+      BigInt(paymentRequest.paymentOptions[0].amount) <
+      BigInt(expectedFullPrice * 1000000)
     ) {
       return {
         state: "price_agreed",

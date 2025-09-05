@@ -31,7 +31,7 @@ If you want to run these examples completely locally, you will need to spin up t
 - [x] P1: Probably use bigint for all price math
 - [ ] P2: Stop using both z and valibot in the same examples
 - [ ] P2: The seller side should keep the message history in state (though this could be a third endpoint that builds on the /api/negotiate endpoint)
-- [ ] P2: Negotiating buyer should not have a hard-coded price threshold in `assessCounterOffer`
+- [x] P2: Negotiating buyer should not have a hard-coded price threshold in `assessCounterOffer`
 - [ ] P2: Constructing a PRT I pass in a decimals = 2 dollar amount (e.g. 10 ^ 2) but on Receipt I get decimals = 6 (e.g. 10 ^ 6)
 - [ ] P3: It's syntactically valid to call verifyPaymentRequestToken without passing in a resolver, but this always seems to throw
 
