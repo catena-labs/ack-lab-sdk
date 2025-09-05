@@ -327,13 +327,13 @@ export class AckLabSdk {
   }
 
   /**
-   * Validate a payment receipt for the agent.
+   * Verify a payment receipt for the agent.
    *
    * @param receipt - The payment receipt to validate
    * @returns Promise resolving to the validated payment receipt and the ID of the payment
    * request the receipt corresponds to.
    */
-  async validatePaymentReceipt(
+  async verifyPaymentReceipt(
     receipt: string
   ): Promise<{ receipt: Verifiable<W3CCredential>; paymentRequestId: string }> {
     const { did } = await this.apiClient.getMetadata()

@@ -25,8 +25,7 @@ async function main() {
 
   console.log(colors.green("payment receipt"), receipt)
 
-  const { paymentRequestId } =
-    await sellerClient.validatePaymentReceipt(receipt)
+  const { paymentRequestId } = await sellerClient.verifyPaymentReceipt(receipt)
 
   console.log(
     colors.green("validated payment receipt for payment request: "),
