@@ -44,7 +44,7 @@ If you want to run these examples completely locally, you will need to spin up t
 - [ ] MCP Examples
 - [ ] Cart example (add multiple things to a cart, then pay for it)
 - [ ] Single-use receipt for something like an image generation
-- [ ] Multi-use receipt - e.g. buyer gets a 10-pack of images for a discount, uses 1 by 1
+- [x] Multi-use receipt - e.g. buyer gets a 10-pack of images for a discount, uses 1 by 1
 - [ ] Subscription example - access to a resource for X amount of time
 
 ## Thoughts / Questions

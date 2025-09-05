@@ -26,7 +26,7 @@ Then run the examples:
 This example purchases a piece of content from a seller via a simple HTTP endpoint.
 
 ```bash
-pnpm run fixed-price
+pnpm run buy-fixed-price
 ```
 
 ### Bulk Purchase of images via HTTP endpoint
@@ -44,7 +44,7 @@ pnpm run images
 The simplest of the flows, this example does not use an LLM, just the ACK Lab SDK to securely purchase a piece of content from a seller.
 
 ```bash
-pnpm run buy-chat
+pnpm run buy-chat-fixed-price
 ```
 
 ### Simple Purchase via secure chat triggered by an LLM
@@ -52,7 +52,7 @@ pnpm run buy-chat
 This example uses an LLM to purchase a piece of content from a seller.
 
 ```bash
-pnpm run buy-agent
+pnpm run buy-chat-llm
 ```
 
 ### Negotiated Purchase via secure chat triggered by an LLM
