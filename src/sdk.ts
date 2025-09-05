@@ -1,8 +1,11 @@
 import {
   getDidResolver,
   verifyJwt,
+  verifyPaymentReceipt,
   type JwtString,
-  type Resolvable
+  type Resolvable,
+  type Verifiable,
+  type W3CCredential
 } from "agentcommercekit"
 import { jwtStringSchema } from "agentcommercekit/schemas/valibot"
 import * as s from "standard-parse"
@@ -321,6 +324,34 @@ export class AckLabSdk {
    */
   async executePayment(paymentRequestToken: string) {
     return this.apiClient.executePayment(paymentRequestToken)
+  }
+
+  /**
+   * Validate a payment receipt for the agent.
+   *
+   * @param receipt - The payment receipt to validate
+   * @returns Promise resolving to the validated payment receipt and the ID of the payment
+   * request the receipt corresponds to.
+   */
+  async validatePaymentReceipt(
+    receipt: string
+  ): Promise<{ receipt: Verifiable<W3CCredential>; paymentRequestId: string }> {
+    const { did } = await this.apiClient.getMetadata()
+
+    const result = await verifyPaymentReceipt(receipt, {
+      resolver: this.resolver,
+      paymentRequestIssuer: did, // Ensure the payment request was issued by the agent
+      verifyPaymentRequestTokenJwt: true
+    })
+
+    if (!result.paymentRequest) {
+      throw new Error("Unable to parse and verify receipt payment request")
+    }
+
+    return {
+      receipt: result.receipt,
+      paymentRequestId: result.paymentRequest.id
+    }
   }
 
   /**
