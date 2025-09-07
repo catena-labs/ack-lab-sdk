@@ -1,8 +1,6 @@
 import { integer, jsonb, pgTable, timestamp, uuid } from "drizzle-orm/pg-core"
 
-type PaymentRequestMetadata = {
-  credits: number
-}
+type PaymentRequestMetadata = Record<string, any>
 
 export const paymentRequestsTable = pgTable("payment_requests", {
   id: uuid().primaryKey().defaultRandom(),
