@@ -92,3 +92,26 @@ The `buyer` directory contains 5 runnable examples demonstrating different inter
 **What it does**: Uses an LLM-powered buyer agent to interact with seller endpoints (implementation varies).
 **Paywall side**: Can interact with various chat endpoints depending on implementation
 **Flow**: LLM-driven buyer behavior with autonomous decision making
+
+## Prelaunch Fix List
+
+- [ ] P2: Stop using both z and valibot in the same examples
+- [ ] P2: The seller side should keep the message history in state (though this could be a third endpoint that builds on the /api/negotiate endpoint)
+- [ ] P2: Constructing a PRT I pass in a decimals = 2 dollar amount (e.g. 10 ^ 2) but on Receipt I get decimals = 6 (e.g. 10 ^ 6)
+- [ ] P3: It's syntactically valid to call verifyPaymentRequestToken without passing in a resolver, but this always seems to throw
+
+## Future Examples
+
+- [x] Vanilla HTTP 402 endpoint (as opposed to the existing chat endpoints)
+- [ ] Interactions with more than 2 agents (perhaps one buyer who wants a complex thing done, plus a seller who delegates to contractor agents)
+- [ ] Arbitrage? Perhaps an Arb agent who negotiates with multiple sellers to get the best price, then sells to the buyer at a premium
+- [ ] Crypto Swap example (a la Joao)
+- [ ] MCP Examples
+- [ ] Cart example (add multiple things to a cart, then pay for it)
+- [ ] Single-use receipt for something like an image generation
+- [x] Multi-use receipt - e.g. buyer gets a 10-pack of images for a discount, uses 1 by 1
+- [ ] Subscription example - access to a resource for X amount of time
+
+## Thoughts / Questions
+
+- Our PRT endpoint in ACK Lab turns USD into SOL - seems non-obvious to devs
