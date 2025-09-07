@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Paywall Demo",
-  description: "Paywall demo for Ack Lab SDK"
+  title: "ACK Lab SDK Paywall Examples",
+  description: "ACK Lab SDK Paywall Examples"
 }
 
 export default function RootLayout({
