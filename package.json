@@ -26,7 +26,9 @@
   "scripts": {
     "build": "tsdown",
     "check": "pnpm check:format && pnpm check:lint && pnpm check:types && pnpm check:publint && pnpm check:examples && pnpm test",
-    "check:examples": "cd examples/buyer && pnpm run check && cd ../paywall && pnpm run check",
+    "check:examples": "pnpm check:examples:buyer && pnpm check:examples:paywall",
+    "check:examples:buyer": "cd examples/buyer && pnpm install && pnpm run check",
+    "check:examples:paywall": "cd examples/paywall && pnpm install && pnpm run check",
     "check:format": "prettier --experimental-cli --check .",
     "check:lint": "eslint .",
     "check:publint": "publint",
