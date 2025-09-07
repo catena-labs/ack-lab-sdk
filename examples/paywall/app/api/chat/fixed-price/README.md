@@ -143,6 +143,29 @@ This allows tracking of:
 3. **Database Integrity**: Store payment request details before creating the ACK Lab payment request
 4. **Error Handling**: Fail securely when receipts don't match your records
 
+## Testing with the Buyer Agent
+
+You can test the complete fixed-price chat flow using the companion buyer agent:
+
+```bash
+cd examples/buyer
+pnpm run buy-chat-fixed-price
+```
+
+The buyer agent (`buyer/scripts/buy-chat-fixed-price.ts`) implements:
+
+- **Direct agent communication** - Uses the ACK Lab SDK's `createAgentCaller` for secure messaging
+- **Automatic payment execution** - Pays the received Payment Request Token immediately
+- **Receipt submission** - Completes the transaction to receive the research content
+
+**Buyer Agent Flow:**
+
+1. Sends initial message requesting research on William Adama
+2. Receives payment request token from the seller
+3. Executes payment using `sdk.executePayment()`
+4. Submits receipt back to seller with the same message
+5. Receives and displays the purchased research content
+
 ## Usage
 
 This pattern is ideal for:
@@ -154,10 +177,37 @@ This pattern is ideal for:
 
 ## Environment Variables
 
-Make sure to set these environment variables:
+To run both sides of the transaction:
+
+**Paywall (Seller):**
 
 - `ACK_LAB_CLIENT_ID` - Your ACK Lab client ID
 - `ACK_LAB_CLIENT_SECRET` - Your ACK Lab client secret
+- `DATABASE_URL` - Your database URL (neon works)
+
+**Buyer:**
+
+- `ACK_LAB_CLIENT_ID` - Your ACK Lab client ID (can be same as seller)
+- `ACK_LAB_CLIENT_SECRET` - Your ACK Lab client secret (can be same as seller)
+- `PAYWALL_HOST` - URL of the running paywall (e.g., `http://localhost:3000`)
+
+## Running the Complete Example
+
+1. **Start the paywall server:**
+
+   ```bash
+   cd examples/paywall
+   pnpm dev
+   ```
+
+2. **Run the buyer agent:**
+
+   ```bash
+   cd examples/buyer
+   pnpm run buy-chat-fixed-price
+   ```
+
+3. **Watch the complete transaction** flow through console logs
 
 ## Next Steps
 

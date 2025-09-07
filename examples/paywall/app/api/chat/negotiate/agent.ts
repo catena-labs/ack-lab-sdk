@@ -168,12 +168,13 @@ export async function processMessage({
             .returning()
 
           //now create the payment request itself using the ACK Lab SDK
-          const { paymentRequestToken } = await sdk.createPaymentRequest({
+          const paymentRequest = await sdk.createPaymentRequest({
             description: description,
-            amount: product.price * 100,
+            amount: amount * 100,
             currencyCode: "USD",
             id: prt[0].id
           })
+          paymentRequestToken = paymentRequest.paymentRequestToken
 
           console.log("Payment Request Token generated")
           console.log(paymentRequestToken)

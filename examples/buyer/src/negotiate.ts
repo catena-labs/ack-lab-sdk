@@ -168,20 +168,23 @@ type Negotiation = {
   state: "negotiating" | "price_agreed" | "complete"
   research: any
   paymentRequestToken?: string
+  message?: string //the most recent message from the seller
 }
 
 // This function assesses the counter offer from the seller
 // In this case we're just accepting the offer if it's less than full price
 async function assessCounterOffer({
   paymentRequestToken,
-  research
+  research,
+  message
 }: Payload): Promise<Negotiation> {
   //if we have received the research, the negotiation is complete
   if (research) {
     return {
       state: "complete",
       research,
-      paymentRequestToken
+      paymentRequestToken,
+      message
     }
   }
 
@@ -194,23 +197,18 @@ async function assessCounterOffer({
       }
     )
 
-    //This payment option is known to always be a testname USD-parity currency with 6dp
-    //Obviously, this is brittle and will need to be updated when we leave developer preview
-    if (
+    //we'll accept any discount at all
+    const priceAcceptable =
       BigInt(paymentRequest.paymentOptions[0].amount) <
       BigInt(expectedFullPrice * 1000000)
-    ) {
-      return {
-        state: "price_agreed",
-        research,
-        paymentRequestToken
-      }
-    } else {
-      return {
-        state: "negotiating",
-        research,
-        paymentRequestToken
-      }
+
+    //This payment option is known to always be a testname USD-parity currency with 6dp
+    //Obviously, this is brittle and will need to be updated when we leave developer preview
+    return {
+      state: priceAcceptable ? "price_agreed" : "negotiating",
+      research,
+      paymentRequestToken,
+      message
     }
   }
 

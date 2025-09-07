@@ -140,6 +140,32 @@ This pattern is ideal for:
 - Services where consumption and payment are separated in time
 - Systems requiring usage tracking and analytics
 
+## Testing with the Buyer Script
+
+You can test the complete credit purchase and image generation flow using the companion buyer script:
+
+```bash
+cd examples/buyer
+pnpm run images
+```
+
+The buyer script (`buyer/scripts/images.ts`) demonstrates the full workflow by calling both endpoints:
+
+- **Credit purchase** - First calls `/api/images/buy` to purchase 3 image generation credits
+- **Payment execution** - Pays the received Payment Request Token
+- **Image generation** - Uses the receipt to call `/api/images/generate` twice
+- **Random president selection** - Picks random 19th century US presidents for each image
+- **File management** - Saves generated images to `./images/` directory with president names
+
+**Complete Flow Demonstration:**
+
+1. Purchases 3 credits at `/api/images/buy` for $3 total
+2. Receives and validates the Payment Request Token
+3. Executes payment and receives a receipt
+4. Calls `/api/images/generate` twice with random presidents
+5. Each call consumes 1 credit and returns a PNG image
+6. Saves images locally, leaving 1 unused credit on the receipt
+
 ## Integration with Credit Purchase
 
 This endpoint works in conjunction with `/images/buy`:
@@ -151,12 +177,38 @@ This endpoint works in conjunction with `/images/buy`:
 
 ## Environment Variables
 
-To run the paywall, make sure to set these environment variables:
+To run both the purchase and generation flow:
+
+**Paywall (Seller):**
 
 - `ACK_LAB_CLIENT_ID` - Your ACK Lab client ID
 - `ACK_LAB_CLIENT_SECRET` - Your ACK Lab client secret
 - `DATABASE_URL` - Your database URL (neon works)
 - `OPENAI_API_KEY` - Your OpenAI API key for DALL-E 3 access
+
+**Buyer:**
+
+- `ACK_LAB_CLIENT_ID` - Your ACK Lab client ID (can be same as seller)
+- `ACK_LAB_CLIENT_SECRET` - Your ACK Lab client secret (can be same as seller)
+- `PAYWALL_HOST` - URL of the running paywall (e.g., `http://localhost:3000`)
+
+## Running the Complete Example
+
+1. **Start the paywall server:**
+
+   ```bash
+   cd examples/paywall
+   pnpm dev
+   ```
+
+2. **Run the buyer script:**
+
+   ```bash
+   cd examples/buyer
+   pnpm run images
+   ```
+
+3. **Check the generated images** in `examples/buyer/images/`
 
 ## Next Steps
 
