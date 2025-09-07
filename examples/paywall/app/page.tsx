@@ -113,11 +113,9 @@ export default function Home() {
         "The most basic ACK Lab SDK implementation - handles both payment requests and product delivery in a single endpoint.",
       detailedSummary: `This endpoint represents the simplest possible implementation of digital commerce using the ACK Lab SDK. It demonstrates the fundamental pattern of payment request generation and receipt validation in a single, straightforward HTTP endpoint.
 
-When a buyer makes a request without a receipt, the endpoint creates a payment request in the database first, then generates an ACK Lab Payment Request Token (PRT) for exactly $10. The buyer receives this PRT with a 402 "Payment Required" status code, indicating that payment is needed to access the content.
+When a buyer makes a request without a receipt, the endpoint creates a payment request in the database first, then generates an ACK Lab Payment Request Token (PRT) for exactly $10. The seller returns this PRT with a 402 "Payment Required" status code, indicating that payment is needed to access the content.
 
-After the buyer pays using the PRT and receives a receipt, they submit it back to the same endpoint. The system then performs two-step validation: first cryptographically verifying the receipt's authenticity, then checking the database to ensure the payment request was actually created by this seller. Upon successful validation, the buyer receives their digital product immediately.
-
-This pattern is ideal for developers who want to understand the core ACK Lab SDK concepts without additional complexity from agent communication or AI systems.`,
+After the buyer pays using the PRT and receives a receipt, they submit it back to the same endpoint. The system then performs two-step validation: first cryptographically verifying the receipt's authenticity, then checking the database to ensure the payment request was actually created by this seller. Upon successful validation, the buyer receives their digital product immediately.`,
       buyerScript: "cd examples/buyer && pnpm run buy-fixed-price",
       readmeLink: "/app/api/fixed-price/README.md"
     },
@@ -140,10 +138,8 @@ After payment, the buyer agent submits the receipt through the same secure messa
       title: "AI-Powered Price Negotiation",
       path: "/api/chat/negotiate",
       description:
-        "Shows autonomous AI agents negotiating prices within business constraints using GPT-4o.",
-      detailedSummary: `This endpoint demonstrates one of the most sophisticated patterns in the ACK Lab SDK examples: autonomous AI-to-AI price negotiation. The seller agent uses GPT-4o with carefully crafted business rules to negotiate prices while maintaining profitability constraints.
-
-The AI seller is programmed with specific negotiation parameters, including a maximum discount limit of 50% and instructions to balance revenue optimization with customer retention. When buyers initiate negotiations, the AI evaluates offers, makes counteroffers, and autonomously decides when to accept deals based on its business logic.
+        "Demonstrates how two AI agents can negotiate on price before settling on an agreed amount.",
+      detailedSummary: `The AI seller is programmed with specific negotiation parameters, including a maximum discount limit of 50% and instructions to balance revenue optimization with customer retention. When buyers initiate negotiations, the AI evaluates offers, makes counteroffers, and autonomously decides when to accept deals based on its business logic.
 
 The system integrates LLM decision-making with the ACK Lab SDK's payment infrastructure through custom tools. When the AI decides to accept an offer or make a counteroffer, it automatically calls the createPaymentRequest tool, which generates a Payment Request Token for the negotiated amount. This seamless integration allows the AI to conduct complete business transactions without human intervention.
 
@@ -158,11 +154,11 @@ The negotiation process maintains conversation state across multiple rounds, ena
         "Implements bulk credit purchasing where buyers pre-pay for image generation rights.",
       detailedSummary: `This endpoint implements a credit-based commerce system where buyers can purchase usage rights in bulk before consuming services. It demonstrates how to handle variable quantities, metadata tracking, and prepaid service models using the ACK Lab SDK.
 
-When buyers request credits, they specify the quantity they want to purchase. The system calculates the total cost at $1 per credit and creates a payment request with detailed metadata including the number of credits and product information. This metadata becomes crucial later when the receipt is redeemed for actual service consumption.
+When buyers request credits, they specify the quantity they want to purchase. The system calculates the total cost at $1 per credit and creates a payment request with metadata including the number of credits and product information. This metadata becomes crucial later when the receipt is redeemed for actual service consumption.
 
-The endpoint showcases dynamic pricing calculations and flexible payment request generation. Unlike fixed-price endpoints, this system can handle any quantity of credits, making it suitable for bulk purchasing scenarios. The database stores not just the payment request details but also the specific credit allocation, enabling precise tracking of what buyers have purchased.
+The endpoint showcases dynamic pricing calculations and flexible payment request generation. Unlike fixed-price endpoints, this system can handle any quantity of credits, making it suitable for bulk purchasing scenarios. The number of credits purchased and credits remaining are stored in the database, and the system ensures that buyers can only consume what they have paid for.
 
-This pattern is particularly valuable for services where usage and payment are separated in time. Buyers can purchase credits when convenient, then consume them gradually as needed. The system maintains a complete audit trail of credit purchases, which integrates seamlessly with the consumption endpoint to provide usage tracking and balance management.`,
+This pattern is particularly valuable for services where usage and payment are separated in time. Buyers can purchase credits when convenient, then consume them gradually as needed.`,
       buyerScript: "cd examples/buyer && pnpm run images",
       readmeLink: "/app/api/images/buy/README.md"
     },
@@ -175,9 +171,7 @@ This pattern is particularly valuable for services where usage and payment are s
 
 When buyers submit receipts along with image generation requests, the system first validates the receipt cryptographically, then checks the database to ensure the payment request was created by this seller. It then queries the credits system to determine how many credits remain on the receipt, preventing overuse and ensuring buyers only consume what they've paid for.
 
-The endpoint integrates with OpenAI's DALL-E 3 API to generate high-quality images based on buyer specifications. However, generation only occurs after successful credit verification, ensuring that computational resources are only used for legitimate, paid requests. Each successful generation consumes exactly one credit from the buyer's balance.
-
-The system maintains precise usage tracking through database updates that decrement the remaining credit count. This creates a complete audit trail of credit consumption and prevents double-spending or unauthorized usage. The same receipt can be used multiple times until credits are exhausted, providing flexibility for buyers while maintaining strict usage controls for sellers.`,
+The endpoint integrates with OpenAI's DALL-E 3 API to generate images of 19th century US presidents. Each successful generation consumes exactly one credit from the buyer's balance. The same receipt can be used multiple times until credits are exhausted.`,
       buyerScript: "cd examples/buyer && pnpm run images",
       readmeLink: "/app/api/images/generate/README.md"
     }

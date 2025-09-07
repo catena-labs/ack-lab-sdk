@@ -89,6 +89,7 @@ Each endpoint can be tested using corresponding buyer scripts from the `../buyer
 ## Architecture Patterns
 
 ### Database-First Payment Requests
+
 All endpoints store payment requests in the database before creating ACK Lab payment requests, enabling receipt verification:
 
 ```typescript
@@ -99,6 +100,7 @@ const { paymentRequestToken } = await sdk.createPaymentRequest({id: prt[0].id})
 ```
 
 ### Receipt Validation
+
 Two-step verification ensures security:
 
 ```typescript
@@ -109,6 +111,7 @@ const prt = await getDbPaymentRequest(paymentRequestId)
 ```
 
 ### Agent Communication
+
 Chat endpoints use structured messaging:
 
 ```typescript
