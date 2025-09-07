@@ -1,64 +1,101 @@
-# ACK Lab Buyer Demo
+# ACK Lab Buyer Examples
 
-This directory contains 3 simple examples that show various ways to execute payments against a simple paywall. See the ../paywall directory for the Paywall API implementation.
+This directory contains 5 buyer examples that demonstrate different ways to interact with ACK Lab SDK-powered sellers. Each example shows a different pattern for purchasing digital products, from simple HTTP requests to AI-powered negotiations.
 
-## Setting up
+## Prerequisites
 
-All you need to run these examples is a free ACK Lab account and an ACK Lab Agent with an API key. Go to https://ack-lab.catenalabs.com/, sign in, and create a new agent called "Buyer". Create an API key for the agent and copy the client ID and client secret into the .env file:
+You'll need:
 
-```
-ACK_LAB_CLIENT_ID=your-client-id
-ACK_LAB_CLIENT_SECRET=your-client-secret
-```
-
-Install the dependencies:
+1. **ACK Lab Account**: Sign up at https://ack-lab.catenalabs.com/
+2. **Buyer Agent**: Create an agent called "Buyer" and generate API credentials
+3. **Environment Setup**: Copy credentials to `.env` file:
 
 ```bash
-pnpm install
+ACK_LAB_CLIENT_ID=your-client-id
+ACK_LAB_CLIENT_SECRET=your-client-secret
+PAYWALL_HOST=http://localhost:3000  # or https://ack-lab-paywall.catenalabs.com/
 ```
 
-Then run the examples:
+4. **Dependencies**: Run `pnpm install`
+
+## Running Examples
+
+Start the paywall server first (`cd ../paywall && pnpm dev`) or use the live instance, then run any buyer example.
 
 ## Non-Chat Examples
 
-### One-time Purchase via HTTP endpoint
+### `pnpm run buy-fixed-price` - Direct HTTP Purchase
 
-This example purchases a piece of content from a seller via a simple HTTP endpoint.
+**How it works**: Makes direct HTTP POST requests to the simplest paywall endpoint without any agent communication.
 
-```bash
-pnpm run buy-fixed-price
-```
+**Under the covers**:
 
-### Bulk Purchase of images via HTTP endpoint
+- Makes POST to `/api/fixed-price` with empty body
+- Receives 402 status with Payment Request Token
+- Validates PRT amount using `verifyPaymentRequestToken()`
+- Executes payment with `sdk.executePayment()`
+- Makes second POST with receipt to get digital product
 
-This example purchases a piece of content from a seller via a simple HTTP endpoint.
+**Key techniques**: Direct HTTP requests, PRT validation, receipt submission
 
-```bash
-pnpm run images
-```
+### `pnpm run images` - Credit-Based Workflow
+
+**How it works**: Demonstrates complete credit purchase and consumption cycle by buying image generation credits then using them.
+
+**Under the covers**:
+
+- **Purchase phase**: POSTs to `/api/images/buy` requesting 3 credits ($3 total)
+- **Validation**: Verifies PRT amount matches expected price ($1 per credit)
+- **Payment**: Executes payment and receives receipt
+- **Generation phase**: Uses receipt to POST to `/api/images/generate` twice
+- **Content handling**: Randomly selects presidents, saves PNG images to `./images/`
+- **Credit tracking**: Leaves 1 unused credit on the receipt
+
+**Key techniques**: Multi-endpoint workflow, multi-use receipt
 
 ## Chat Examples
 
-### Simple Purchase via secure chat without an LLM
+### `pnpm run buy-chat-fixed-price` - Agent Communication
 
-The simplest of the flows, this example does not use an LLM, just the ACK Lab SDK to securely purchase a piece of content from a seller.
+**How it works**: Uses ACK Lab's secure agent-to-agent messaging to purchase research at a fixed price.
 
-```bash
-pnpm run buy-chat-fixed-price
-```
+**Under the covers**:
 
-### Simple Purchase via secure chat triggered by an LLM
+- Creates `AgentCaller` with request/response schemas using Valibot
+- Sends structured message: `{message: "Hello I would like to buy research on William Adama"}`
+- Receives response with `paymentRequestToken`
+- Executes payment using `sdk.executePayment()`
+- Sends second message with receipt: `{message: "...", receipt}`
+- Receives research content in structured response
 
-This example uses an LLM to purchase a piece of content from a seller.
+**Key techniques**: Schema-validated messaging, secure agent communication, JWT handling
 
-```bash
-pnpm run buy-chat-llm
-```
+### `pnpm run buy-chat-llm` - LLM-Driven Buyer
 
-### Negotiated Purchase via secure chat triggered by an LLM
+**How it works**: Uses an LLM to autonomously interact with seller endpoints and make purchasing decisions.
 
-This example uses an LLM to purchase a piece of content from a seller, and negotiate the price.
+**Under the covers**:
 
-```bash
-pnpm run negotiate
-```
+- Initializes GPT-4o with buyer persona and tools
+- LLM decides when and how to interact with seller agents
+- Uses tools to call seller endpoints based on conversation context
+- Makes autonomous decisions about payments and negotiations
+- Handles complex multi-turn conversations
+
+**Key techniques**: LLM tool integration, conversational AI
+
+### `pnpm run negotiate` - AI vs AI Negotiation
+
+**How it works**: Demonstrates autonomous AI-to-AI price negotiation where both buyer and seller agents negotiate without human intervention.
+
+**Under the covers**:
+
+- **Buyer AI**: GPT-4o with negotiation strategy (target: $15 or less)
+- **Communication**: Uses `sdk.createAgentCaller()` for secure messaging
+- **Negotiation loop**: LLM calls `buyResearch` tool repeatedly until agreement
+- **Price validation**: Validates PRT amounts using `verifyPaymentRequestToken()`
+- **Decision logic**: Accepts offers below $20 (full price), continues negotiating otherwise
+- **Payment execution**: Automatically pays when acceptable price is reached
+- **Receipt handling**: Submits receipt to complete transaction
+
+**Key techniques**: Multi-agent AI systems, autonomous negotiation, price validation
