@@ -1,5 +1,6 @@
 import { integer, jsonb, pgTable, timestamp, uuid } from "drizzle-orm/pg-core"
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PaymentRequestMetadata = Record<string, any>
 
 export const paymentRequestsTable = pgTable("payment_requests", {

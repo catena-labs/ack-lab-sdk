@@ -4,8 +4,10 @@
   "private": true,
   "scripts": {
     "build": "next build --turbopack",
+    "check": "pnpm check:format && pnpm check:lint",
+    "check:format": "prettier --experimental-cli --check .",
+    "check:lint": "eslint .",
     "dev": "next dev --turbopack",
-    "lint": "eslint",
     "start": "next start"
   },
   "dependencies": {
@@ -30,6 +32,7 @@
     "drizzle-kit": "^0.31.4",
     "eslint": "^9",
     "eslint-config-next": "15.5.2",
+    "prettier": "^3.6.2",
     "tailwindcss": "^4",
     "tsx": "^4.20.5",
     "typescript": "^5"

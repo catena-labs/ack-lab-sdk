@@ -38,5 +38,14 @@ export default tseslint.config(
    */
   { files: ["**/*.{js,mjs,cjs}"], ...tseslint.configs.disableTypeChecked },
 
+  /**
+   * Exclude examples directory from linting.
+   *
+   * Examples have their own tsconfig.json files and should be linted independently.
+   */
+  {
+    ignores: ["examples/**/*"]
+  },
+
   prettier
 )

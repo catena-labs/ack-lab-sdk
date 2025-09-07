@@ -3,11 +3,6 @@
  * receipt that has credits remaining. Each image generation
  * consumes one credit.
  */
-import {
-  verifyPaymentReceipt,
-  getDidResolver,
-  isRevoked
-} from "agentcommercekit"
 import { consumeReceiptCredit, getOrCreateCredits } from "@/db/queries/credits"
 import * as v from "valibot"
 import { experimental_generateImage as generateImage } from "ai"
