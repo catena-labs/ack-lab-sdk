@@ -87,6 +87,7 @@ async function generatePresidentImage(receipt: string) {
   console.log("Generated image for", president)
 }
 
+//makes sure that the PRT is for the expected amount so we don't just blindly send money
 async function checkPaymentRequestToken(paymentRequestToken: string) {
   const { paymentRequest } = await verifyPaymentRequestToken(
     paymentRequestToken,
@@ -99,9 +100,11 @@ async function checkPaymentRequestToken(paymentRequestToken: string) {
 
   return (
     BigInt(paymentOption.amount) ===
-    BigInt(expectedPricePerImage *
-      imagesToPurchase *
-      Math.pow(10, paymentOption.decimals))
+    BigInt(
+      expectedPricePerImage *
+        imagesToPurchase *
+        Math.pow(10, paymentOption.decimals)
+    )
   )
 }
 

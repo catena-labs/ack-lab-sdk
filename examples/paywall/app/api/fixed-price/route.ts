@@ -18,7 +18,7 @@ export const sdk = new AckLabSdk({
 const requestSchema = v.object({ receipt: v.optional(v.string()) })
 
 const productPrice = 10 * 100 // 10 USD in cents
-const content = "Here is your digital product delivery"
+const content = "Here is your digital product that you just paid us for."
 
 export async function POST(req: Request) {
   const body = await req.json()
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
       .insert(paymentRequestsTable)
       .values({
         price: productPrice,
-        metadata: { productId: "adama" }
+        metadata: { productId: "the-only-product-we-have" }
       })
       .returning()
 
