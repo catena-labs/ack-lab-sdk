@@ -5,7 +5,6 @@ import * as v from "valibot"
 import { AckLabSdk } from "@ack-lab/sdk"
 import { db } from "@/db"
 import { paymentRequestsTable } from "@/db/schema"
-import { decodeJwt } from "jose"
 
 const requestSchema = v.object({
   count: v.number()
@@ -23,25 +22,20 @@ export async function POST(req: Request) {
   const { count } = v.parse(requestSchema, await req.json())
   const price = count * pricePerImage
 
-  //create a payment request token
+  //each time we create a PRT, we will store it in the database so that when we receive a receipt
+  //we can validate that it was for a payment request created by us
+  const prt = await db
+    .insert(paymentRequestsTable)
+    .values({ price, metadata: { credits: count } })
+    .returning()
+
+  //now create the payment request itself using the ACK Lab SDK
   const { paymentRequestToken } = await sdk.createPaymentRequest({
     amount: price,
     currencyCode: "USD",
-    description: `Purchase of ${count} image generation credits`
+    description: `Purchase of ${count} image generation credits`,
+    id: prt[0].id
   })
 
-  const prtId = await getPaymentRequestTokenId(paymentRequestToken)
-
-  //save the payment request token to the database
-  await db
-    .insert(paymentRequestsTable)
-    .values({ price, id: prtId, metadata: { credits: count } })
-
   return new Response(paymentRequestToken, { status: 402 })
-}
-
-async function getPaymentRequestTokenId(token: string) {
-  const decoded = decodeJwt(token)
-
-  return decoded.id as string // JWT ID claim
 }

@@ -1,5 +1,8 @@
 import { AckLabSdk } from "@ack-lab/sdk"
 import * as v from "valibot"
+import { getDbPaymentRequest } from "@/db/queries/payment-requests"
+import { db } from "@/db"
+import { paymentRequestsTable } from "@/db/schema"
 
 // we only sell a single product
 const product = {
@@ -37,8 +40,19 @@ export async function processMessage({ receipt }: Input): Promise<Output> {
     console.log("Counterparty has sent a receipt:")
     console.log(receipt)
 
-    //FIXME: verify the receipt here
+    //verify the receipt is valid
+    const { paymentRequestId } = await sdk.verifyPaymentReceipt(receipt)
 
+    //check to see if we ever made a PRT for this receipt
+    const prt = await getDbPaymentRequest(paymentRequestId)
+
+    //if this happens it means somebody has sent us a valid receipt for a payment request we never made
+    if (!prt) {
+      throw new Error("Payment request not found")
+    }
+
+    //in this simplified example we're just returning the content for the single product we sell,
+    //but here you could search your database for the product based on the `prt.metadata.productId`
     return {
       message: `Thank you for your purchase! Here is your research`,
       research: product.content
@@ -46,11 +60,22 @@ export async function processMessage({ receipt }: Input): Promise<Output> {
   } else {
     console.log("No receipt was sent, sending back a payment request token")
 
-    //FIXME: we should be able to create a payment request with a product ID but description is the only field we can set
+    //each time we create a PRT, we will store it in the database so that when we receive a receipt
+    //we can validate that it was for a payment request created by us
+    const prt = await db
+      .insert(paymentRequestsTable)
+      .values({
+        price: product.price,
+        metadata: { productId: product.id }
+      })
+      .returning()
+
+    //now create the payment request itself using the ACK Lab SDK
     const { paymentRequestToken } = await sdk.createPaymentRequest({
       description: `Purchase ${product.title}`,
       amount: product.price * 100,
-      currencyCode: "USD"
+      currencyCode: "USD",
+      id: prt[0].id
     })
 
     return {

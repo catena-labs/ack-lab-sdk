@@ -8,30 +8,41 @@ import {
   getDidResolver,
   isRevoked
 } from "agentcommercekit"
-import {
-  consumeReceiptCredit,
-  getOrCreateDbReceipt
-} from "@/db/queries/receipts"
+import { consumeReceiptCredit, getOrCreateCredits } from "@/db/queries/credits"
 import * as v from "valibot"
 import { experimental_generateImage as generateImage } from "ai"
 import { openai } from "@ai-sdk/openai"
+import { AckLabSdk } from "../../../../../../dist"
+import { presidents } from "@/data/presidents"
 
 const requestSchema = v.object({ receipt: v.string(), name: v.string() })
+
+// Create an ACK Lab SDK instance with the client ID and client secret for the Seller Agent in ACK Lab
+export const sdk = new AckLabSdk({
+  clientId: process.env.ACK_LAB_CLIENT_ID!,
+  clientSecret: process.env.ACK_LAB_CLIENT_SECRET!
+})
 
 export async function POST(req: Request) {
   const { receipt: receiptJwt, name } = v.parse(requestSchema, await req.json())
 
-  //first, check the Receipt JWT is valid
-  const receiptId = await getReceiptId(receiptJwt)
+  //make sure the buyer is asking for a 19th century US president
+  if (!presidents.includes(name)) {
+    return new Response("Invalid name", { status: 400 })
+  }
 
-  if (!receiptId) {
+  //check the Receipt JWT is valid
+  const { paymentRequestId } = await sdk.verifyPaymentReceipt(receiptJwt)
+
+  if (!paymentRequestId) {
     return new Response("Invalid receipt", { status: 400 })
   }
 
-  //then, get or create the receipt and check if it has credits remaining
-  const receipt = await getOrCreateDbReceipt(receiptId)
+  // find out how many credits are remaining on this receipt
+  // (under the covers this creates an entry in the credits table if it doesn't exist)
+  const { id, remainingCredits } = await getOrCreateCredits(paymentRequestId)
 
-  if (receipt.creditsRemaining === 0) {
+  if (remainingCredits === 0) {
     return new Response("No credits remaining", { status: 400 })
   }
 
@@ -41,8 +52,9 @@ export async function POST(req: Request) {
     prompt: `US President ${name} sitting in a chair`
   })
 
-  //finally, consume the receipt credit
-  await consumeReceiptCredit(receipt.id)
+  //finally, consume the receipt credit.
+  //more sophisticated use cases could consume multiple credits at once
+  await consumeReceiptCredit(id)
 
   //return the image
   return new Response(image.uint8Array, {
@@ -51,26 +63,4 @@ export async function POST(req: Request) {
       "Content-Length": image.uint8Array.length.toString()
     }
   })
-}
-
-async function getReceiptId(receiptJwt: string): Promise<string | undefined> {
-  const { receipt: receiptData, paymentRequest } = await verifyPaymentReceipt(
-    receiptJwt,
-    {
-      resolver: getDidResolver()
-    }
-  )
-
-  const {
-    id,
-    credentialSubject: { paymentRequestToken }
-  } = receiptData
-
-  const tokenRevoked = await isRevoked(paymentRequestToken)
-
-  if (tokenRevoked || !paymentRequest || !receiptData.id) {
-    return undefined
-  }
-
-  return paymentRequest.id
 }
