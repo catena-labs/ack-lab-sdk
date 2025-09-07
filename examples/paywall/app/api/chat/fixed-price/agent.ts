@@ -22,13 +22,13 @@ const inputSchema = v.object({
 type Input = v.InferInput<typeof inputSchema>
 
 //when our agent sends a message to the counterparty agent, it is of this shape
-const outputSchema = v.object({
+const _outputSchema = v.object({
   message: v.string(),
   paymentRequestToken: v.optional(v.string()),
   research: v.optional(v.string())
 })
 
-type Output = v.InferOutput<typeof outputSchema>
+type Output = v.InferOutput<typeof _outputSchema>
 
 export const sdk = new AckLabSdk({
   clientId: process.env.ACK_LAB_CLIENT_ID!,
