@@ -130,9 +130,10 @@ export async function processMessage({
         }),
 
         execute: async ({ amount, description }) => {
-          const result = await sdk.createPaymentRequest(amount * 100, {
-            description,
-            currencyCode: "USD"
+          const result = await sdk.createPaymentRequest({
+            amount: amount * 100,
+            currencyCode: "USD",
+            description
           })
 
           paymentRequestToken = result.paymentRequestToken

@@ -47,13 +47,11 @@ export async function processMessage({ receipt }: Input): Promise<Output> {
     console.log("No receipt was sent, sending back a payment request token")
 
     //FIXME: we should be able to create a payment request with a product ID but description is the only field we can set
-    const { paymentRequestToken } = await sdk.createPaymentRequest(
-      product.price * 100,
-      {
-        description: `Purchase ${product.title}`,
-        currencyCode: "USD"
-      }
-    )
+    const { paymentRequestToken } = await sdk.createPaymentRequest({
+      description: `Purchase ${product.title}`,
+      amount: product.price * 100,
+      currencyCode: "USD"
+    })
 
     return {
       message: `The product is available for $${product.price}. Here is a Payment Request Token you can use to purchase it.`,

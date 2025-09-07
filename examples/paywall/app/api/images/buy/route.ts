@@ -24,7 +24,8 @@ export async function POST(req: Request) {
   const price = count * pricePerImage
 
   //create a payment request token
-  const { paymentRequestToken } = await sdk.createPaymentRequest(price, {
+  const { paymentRequestToken } = await sdk.createPaymentRequest({
+    amount: price,
     currencyCode: "USD",
     description: `Purchase of ${count} image generation credits`
   })

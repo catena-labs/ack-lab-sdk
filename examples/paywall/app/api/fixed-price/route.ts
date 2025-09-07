@@ -43,13 +43,11 @@ export async function POST(req: Request) {
       "Did not receive a receipt from the buyer, sending a payment request token"
     )
 
-    const { paymentRequestToken } = await sdk.createPaymentRequest(
-      productPrice,
-      {
-        currencyCode: "USD",
-        description: "Test payment request"
-      }
-    )
+    const { paymentRequestToken } = await sdk.createPaymentRequest({
+      amount: productPrice,
+      currencyCode: "USD",
+      description: "Test payment request"
+    })
 
     return new Response(paymentRequestToken, { status: 402 })
   }
