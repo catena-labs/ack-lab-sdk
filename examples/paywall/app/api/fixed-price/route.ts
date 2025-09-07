@@ -5,11 +5,9 @@
  */
 import { AckLabSdk } from "@ack-lab/sdk"
 import * as v from "valibot"
-import {
-  verifyPaymentReceipt,
-  getDidResolver,
-  isRevoked
-} from "agentcommercekit"
+import { getDbPaymentRequest } from "@/db/queries/payment-requests"
+import { db } from "@/db"
+import { paymentRequestsTable } from "@/db/schema"
 
 // Create an ACK Lab SDK instance with the client ID and client secret for the Seller Agent in ACK Lab
 export const sdk = new AckLabSdk({
@@ -30,49 +28,42 @@ export async function POST(req: Request) {
   if (receipt) {
     console.log("Received a receipt from the buyer")
 
-    //verify the receipt is valid and for the right amount
-    const isCorrect = await isReceiptCorrect(receipt)
+    //verify the receipt is valid
+    const { paymentRequestId } = await sdk.verifyPaymentReceipt(receipt)
 
-    if (!isCorrect) {
-      return new Response("Invalid receipt", { status: 400 })
+    //check to see if we ever made a PRT for this receipt
+    const prt = await getDbPaymentRequest(paymentRequestId)
+
+    //if this happens it means somebody has sent us a valid receipt for a payment request we never made
+    if (!prt) {
+      throw new Error("Payment request not found")
     }
 
+    //give the user what they paid for
     return new Response(content)
   } else {
     console.log(
       "Did not receive a receipt from the buyer, sending a payment request token"
     )
 
+    //each time we create a PRT, we will store it in the database so that when we receive a receipt
+    //we can validate that it was for a payment request created by us
+    const prt = await db
+      .insert(paymentRequestsTable)
+      .values({
+        price: productPrice,
+        metadata: { productId: "adama" }
+      })
+      .returning()
+
+    //now create the payment request itself using the ACK Lab SDK
     const { paymentRequestToken } = await sdk.createPaymentRequest({
       amount: productPrice,
       currencyCode: "USD",
-      description: "Test payment request"
+      description: "Test payment request",
+      id: prt[0].id
     })
 
     return new Response(paymentRequestToken, { status: 402 })
   }
-}
-
-const resolver = getDidResolver()
-
-//verifies that a receipt is valid, not revoked, and for the right amount
-async function isReceiptCorrect(receiptJwt: string): Promise<boolean> {
-  const { receipt, paymentRequest } = await verifyPaymentReceipt(receiptJwt, {
-    resolver
-  })
-
-  const {
-    credentialSubject: { paymentRequestToken }
-  } = receipt
-
-  const tokenRevoked = await isRevoked(paymentRequestToken)
-
-  if (tokenRevoked || !paymentRequest) {
-    return false
-  }
-
-  const { amount } = paymentRequest.paymentOptions[0]
-
-  //FIXME: it is quite surprising to have to multiply by 10000 here
-  return BigInt(amount) === BigInt(productPrice * 10000)
 }

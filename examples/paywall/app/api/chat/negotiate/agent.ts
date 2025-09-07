@@ -4,6 +4,9 @@ import type { ModelMessage } from "ai"
 import { AckLabSdk } from "@ack-lab/sdk"
 import { z } from "zod"
 import * as v from "valibot"
+import { getDbPaymentRequest } from "@/db/queries/payment-requests"
+import { db } from "@/db"
+import { paymentRequestsTable } from "@/db/schema"
 
 // Our negotiating agent has two products that it can sell
 const products = [
@@ -94,20 +97,33 @@ export async function processMessage({
 }: Input): Promise<Output> {
   console.log("Processing message: ", message)
 
+  //if we receive a receipt, check that it's valid and return the research
   if (receipt) {
     console.log("Receipt:", receipt)
 
-    //FIXME: verify the receipt
-    //FIXME: how do we get the real product ID here? It needs to be on the PRT really
-    const productId = "adama"
+    //verify the receipt is valid
+    const { paymentRequestId } = await sdk.verifyPaymentReceipt(receipt)
+
+    //check to see if we ever made a PRT for this receipt
+    const prt = await getDbPaymentRequest(paymentRequestId)
+
+    //if this happens it means somebody has sent us a valid receipt for a payment request we never made
+    if (!prt) {
+      throw new Error("Payment request not found")
+    }
+
+    const product = products.find(
+      (product) => product.id === prt.metadata.productId
+    )
+
+    if (!product) {
+      throw new Error("Product not found")
+    }
 
     return {
       message: "Thank you for your purchase! Here is your research",
-      research: products.find((product) => product.id === productId)?.content
+      research: product.content
     }
-  } else {
-    console.log("No receipt, here's the message from the buyer:")
-    console.log(message)
   }
 
   messages.push({
@@ -117,6 +133,7 @@ export async function processMessage({
 
   let paymentRequestToken: string | undefined
 
+  //invoke our LLM to start negotiating for and then purchase the research
   const result = await generateText({
     model: openai("gpt-4o"),
     stopWhen: stepCountIs(3),
@@ -125,18 +142,38 @@ export async function processMessage({
       createPaymentRequest: tool({
         description: "Create a payment request",
         inputSchema: z.object({
-          amount: z.number(),
-          description: z.string()
+          productId: z.string().describe("ID of the product to purchase"),
+          amount: z.number().describe("Amount of the payment request in USD"),
+          description: z.string().describe("Description of the payment request")
         }),
 
-        execute: async ({ amount, description }) => {
-          const result = await sdk.createPaymentRequest({
-            amount: amount * 100,
-            currencyCode: "USD",
-            description
-          })
+        execute: async ({ amount, description, productId }) => {
+          const product = products.find((product) => product.id === productId)
 
-          paymentRequestToken = result.paymentRequestToken
+          if (!product) {
+            return {
+              state: "error",
+              message: "Product not found"
+            }
+          }
+
+          //each time we create a PRT, we will store it in the database so that when we receive a receipt
+          //we can validate that it was for a payment request created by us
+          const prt = await db
+            .insert(paymentRequestsTable)
+            .values({
+              price: amount,
+              metadata: { productId: product.id }
+            })
+            .returning()
+
+          //now create the payment request itself using the ACK Lab SDK
+          const { paymentRequestToken } = await sdk.createPaymentRequest({
+            description: description,
+            amount: product.price * 100,
+            currencyCode: "USD",
+            id: prt[0].id
+          })
 
           console.log("Payment Request Token generated")
           console.log(paymentRequestToken)
