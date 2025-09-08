@@ -135,12 +135,11 @@ To run both sides of the transaction:
 
 - `ACK_LAB_CLIENT_ID` - Your ACK Lab client ID
 - `ACK_LAB_CLIENT_SECRET` - Your ACK Lab client secret
-- `DATABASE_URL` - Your database URL (neon works)
 
 **Buyer:**
 
-- `ACK_LAB_CLIENT_ID` - Your ACK Lab client ID (can be same as seller)
-- `ACK_LAB_CLIENT_SECRET` - Your ACK Lab client secret (can be same as seller)
+- `ACK_LAB_CLIENT_ID` - Your ACK Lab client ID (cannot be same as seller)
+- `ACK_LAB_CLIENT_SECRET` - Your ACK Lab client secret (cannot be same as seller)
 - `PAYWALL_HOST` - URL of the running paywall (e.g., `http://localhost:3000`)
 
 ## Running the Complete Example

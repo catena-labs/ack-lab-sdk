@@ -60,7 +60,6 @@ You'll need:
 ```bash
 ACK_LAB_CLIENT_ID=your-client-id
 ACK_LAB_CLIENT_SECRET=your-client-secret
-DATABASE_URL=your-database-url  # Neon works well
 OPENAI_API_KEY=your-openai-key  # Optional, required for LLM and image generation endpoints
 ```
 
