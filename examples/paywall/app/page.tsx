@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useState } from "react"
 
 interface CopyButtonProps {
@@ -114,7 +115,7 @@ export default function Home() {
       detailedSummary: `When a buyer makes a request without a receipt, the endpoint creates a payment request in the database first, then generates an ACK Lab Payment Request Token (PRT) for exactly $10. The seller returns this PRT with a 402 "Payment Required" status code, indicating that payment is needed to access the content.
 
 After the buyer pays using the PRT and receives a receipt, they submit it back to the same endpoint. The system then performs two-step validation: first cryptographically verifying the receipt's authenticity, then checking the database to ensure the payment request was actually created by this seller. Upon successful validation, the buyer receives their digital product immediately.`,
-      buyerScript: "cd examples/buyer && pnpm run buy-fixed-price",
+      buyerScript: "pnpm run buy-fixed-price",
       readmeLink: "/app/api/fixed-price/README.md"
     },
     {
@@ -125,7 +126,7 @@ After the buyer pays using the PRT and receives a receipt, they submit it back t
       detailedSummary: `When a buyer agent sends an initial message requesting research, the seller responds with product information and automatically generates a Payment Request Token, which is sent back through the ACK Lab SDK's secure messaging channel.
 
 After payment, the buyer agent submits the receipt through the same secure messaging channel. The seller validates the receipt and delivers the research content as a structured response. This pattern demonstrates how digital commerce can be conducted entirely through secure agent communication without exposing sensitive payment details in HTTP responses.`,
-      buyerScript: "cd examples/buyer && pnpm run buy-chat-fixed-price",
+      buyerScript: "pnpm run buy-chat-fixed-price",
       readmeLink: "/app/api/chat/fixed-price/README.md"
     },
     {
@@ -138,7 +139,7 @@ After payment, the buyer agent submits the receipt through the same secure messa
 The system integrates LLM decision-making with the ACK Lab SDK's payment infrastructure through custom tools. When the AI decides to accept an offer or make a counteroffer, it automatically calls the createPaymentRequest tool, which generates a Payment Request Token for the negotiated amount. This seamless integration allows the AI to conduct complete business transactions without human intervention.
 
 The negotiation process maintains conversation state across multiple rounds, enabling sophisticated back-and-forth discussions. The AI can reference previous offers, build rapport with buyers, and make strategic pricing decisions. Once a price is agreed upon, the standard ACK Lab payment and receipt validation process ensures secure transaction completion.`,
-      buyerScript: "cd examples/buyer && pnpm run negotiate",
+      buyerScript: "pnpm run negotiate",
       readmeLink: "/app/api/chat/negotiate/README.md"
     },
     {
@@ -149,7 +150,7 @@ The negotiation process maintains conversation state across multiple rounds, ena
       detailedSummary: `This pattern shows how usage and payment can be separated in time. Buyers can purchase credits when convenient, then consume them gradually as needed. Buyers pre-pay for image generation rights in bulk. The system calculates the total cost and creates a payment request with metadata including the number of credits and product information.
 
 The number of credits purchased and credits remaining are stored in the database, and the system ensures that buyers can only consume what they have paid for.`,
-      buyerScript: "cd examples/buyer && pnpm run images",
+      buyerScript: "pnpm run images",
       readmeLink: "/app/api/images/buy/README.md"
     },
     {
@@ -160,9 +161,22 @@ The number of credits purchased and credits remaining are stored in the database
       detailedSummary: `Linked to the Credit-Based Purchasing example, this pattern shows how an ACK Receipt can be presented multiple times to consume credits. The endpoint integrates with OpenAI's DALL-E 3 API to generate images of 19th century US presidents. Each successful generation uses one credit from the buyer's balance. The same receipt can be used multiple times until credits are exhausted.
 
 When buyers submit receipts along with image generation requests, the system first validates the receipt cryptographically, then checks the database to ensure the payment request was created by this seller. It then queries the credits system to determine how many credits remain on the receipt, preventing overuse and ensuring buyers only consume what they've paid for.`,
-      buyerScript: "cd examples/buyer && pnpm run images",
+      buyerScript: "pnpm run images",
       readmeLink: "/app/api/images/generate/README.md"
     }
+  ]
+
+  const commands = [
+    "pnpm run buy-fixed-price      -> /api/fixed-price",
+    "pnpm run buy-chat-fixed-price -> /api/chat/fixed-price",
+    "pnpm run negotiate            -> /api/chat/negotiate",
+    "pnpm run images               -> /api/images/buy & /api/images/generate"
+  ]
+
+  const envVars = [
+    "ACK_LAB_CLIENT_ID=YOUR_CLIENT_ID",
+    "ACK_LAB_CLIENT_SECRET=YOUR_CLIENT_SECRET",
+    "PAYWALL_HOST=http://localhost:3000"
   ]
 
   return (
@@ -174,23 +188,24 @@ When buyers submit receipts along with image generation requests, the system fir
             ACK Lab SDK Paywall Demo
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            This Next.js application implements 5 different ACK Lab SDK patterns
-            as API endpoints. Each endpoint demonstrates a different approach to
-            digital commerce, from simple HTTP transactions to AI-powered
-            negotiations.
+            This simple Next.js application implements 5 different ACK Lab SDK
+            patterns as API endpoints. Each endpoint demonstrates a different
+            approach to digital commerce, from simple HTTP transactions to
+            AI-powered negotiations.
           </p>
         </div>
 
         {/* Getting Started */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-12">
           <h2 className="text-2xl font-semibold text-blue-900 mb-4">
-            Getting Started
+            Running the Buyer Examples
           </h2>
           <p className="text-blue-800 mb-4">
-            The paywall is running and ready to accept requests. Test any
+            If you can see this page then the paywall is running and ready to
+            accept requests. Now that the paywall is running, you can test any
             endpoint using the corresponding buyer scripts:
           </p>
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-1 gap-4">
             <div>
               <h3 className="font-medium text-blue-900 mb-2">
                 1. Install buyer dependencies:
@@ -199,9 +214,20 @@ When buyers submit receipts along with image generation requests, the system fir
             </div>
             <div>
               <h3 className="font-medium text-blue-900 mb-2">
-                2. Run any buyer example (inside examples/buyer dir):
+                2. Set examples/buyer/.env environment variables (create a
+                seller agent in the{" "}
+                <Link href="https://ack-lab.catenalabs.com/" target="_blank">
+                  ACK Lab Console
+                </Link>{" "}
+                to generate API key):
               </h3>
-              <CodeBlock>pnpm run buy-fixed-price</CodeBlock>
+              <CodeBlock language=".env">{envVars.join("\n")}</CodeBlock>
+            </div>
+            <div>
+              <h3 className="font-medium text-blue-900 mb-2">
+                3. Run any buyer example (inside examples/buyer dir):
+              </h3>
+              <CodeBlock>{commands.join("\n")}</CodeBlock>
             </div>
           </div>
         </div>
