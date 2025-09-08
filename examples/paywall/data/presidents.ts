@@ -18,7 +18,7 @@ export const presidents = [
   "Andrew Johnson",
   "Ulysses S. Grant",
   "Rutherford B. Hayes",
-  // "James A. Garfield", // OpenAI does not seem to like Garfield
+  // "James A. Garfield", // OpenAI refuses to generate images of Garfield
   "Chester A. Arthur",
   "Grover Cleveland",
   "Benjamin Harrison",
