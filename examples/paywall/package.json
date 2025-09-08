@@ -8,6 +8,7 @@
     "check:format": "prettier --experimental-cli --check .",
     "check:lint": "eslint .",
     "dev": "next dev --turbopack",
+    "setup": "./bin/setup",
     "start": "next start"
   },
   "dependencies": {

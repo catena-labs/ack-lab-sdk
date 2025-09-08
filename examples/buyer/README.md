@@ -13,7 +13,7 @@ You'll need:
 ```bash
 ACK_LAB_CLIENT_ID=your-client-id
 ACK_LAB_CLIENT_SECRET=your-client-secret
-PAYWALL_HOST=http://localhost:3000  # or https://ack-lab-paywall.catenalabs.com/
+PAYWALL_HOST=http://localhost:3000
 ```
 
 4. **Dependencies**: Run `pnpm install`

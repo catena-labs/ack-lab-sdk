@@ -2,6 +2,45 @@
 
 This directory contains a Next.js application implementing 5 different ACK Lab SDK patterns as API endpoints. Each endpoint demonstrates a different approach to digital commerce, from simple HTTP transactions to AI-powered negotiations.
 
+These Paywall endpoints power the buyer-side examples that can be found inside the `examples/buyer` directory of the ACK Lab SDK. Each buyer-side example there calls one or more of these endpoints.
+
+## Prerequisites
+
+You'll need:
+
+1. **ACK Lab Account**: Sign up at https://ack-lab.catenalabs.com/
+2. **Paywall Agent**: Create an agent called "Paywall" and generate API credentials
+3. **Environment Setup**: Copy credentials to `.env` file:
+
+```bash
+ACK_LAB_CLIENT_ID=your-client-id
+ACK_LAB_CLIENT_SECRET=your-client-secret
+OPENAI_API_KEY=your-openai-key  # Optional, required for LLM and image generation endpoints
+```
+
+4. **Database Setup**: The app uses Drizzle ORM with PostgreSQL for payment request tracking
+
+## Running the Paywall
+
+Install dependencies and start the server:
+
+```bash
+pnpm install
+pnpm run setup # Creates the database and .env file; you still need to populate ACK_LAB_CLIENT_* vars
+pnpm run dev
+```
+
+The paywall runs on http://localhost:3000 and provides API endpoints that buyer scripts can interact with.
+
+## Testing with Buyer Scripts
+
+Each endpoint can be tested using corresponding buyer scripts from the `../buyer` directory:
+
+- **Simple HTTP**: `pnpm run buy-fixed-price` → `/api/fixed-price`
+- **Agent Chat**: `pnpm run buy-chat-fixed-price` → `/api/chat/fixed-price`
+- **AI Negotiation**: `pnpm run negotiate` → `/api/chat/negotiate`
+- **Credit Workflow**: `pnpm run images` → `/api/images/buy` + `/api/images/generate`
+
 ## API Endpoints
 
 ### `/api/fixed-price` - Simple HTTP Commerce
@@ -48,42 +87,6 @@ Consumes purchased credits to generate AI images using DALL-E 3, with usage trac
 **Pattern**: Pay-per-use service with credit tracking
 **Buyer script**: `cd ../buyer && pnpm run images` (uses both buy and generate)
 **Details**: [Image Generation README](app/api/images/generate/README.md)
-
-## Prerequisites
-
-You'll need:
-
-1. **ACK Lab Account**: Sign up at https://ack-lab.catenalabs.com/
-2. **Paywall Agent**: Create an agent called "Paywall" and generate API credentials
-3. **Environment Setup**: Copy credentials to `.env` file:
-
-```bash
-ACK_LAB_CLIENT_ID=your-client-id
-ACK_LAB_CLIENT_SECRET=your-client-secret
-OPENAI_API_KEY=your-openai-key  # Optional, required for LLM and image generation endpoints
-```
-
-4. **Database Setup**: The app uses Drizzle ORM with PostgreSQL for payment request tracking
-
-## Running the Paywall
-
-Install dependencies and start the server:
-
-```bash
-pnpm install
-pnpm run dev
-```
-
-The paywall runs on http://localhost:3000 and provides API endpoints that buyer scripts can interact with.
-
-## Testing with Buyer Scripts
-
-Each endpoint can be tested using corresponding buyer scripts from the `../buyer` directory:
-
-- **Simple HTTP**: `pnpm run buy-fixed-price` → `/api/fixed-price`
-- **Agent Chat**: `pnpm run buy-chat-fixed-price` → `/api/chat/fixed-price`
-- **AI Negotiation**: `pnpm run negotiate` → `/api/chat/negotiate`
-- **Credit Workflow**: `pnpm run images` → `/api/images/buy` + `/api/images/generate`
 
 ## Architecture Patterns
 

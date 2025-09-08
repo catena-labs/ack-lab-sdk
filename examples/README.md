@@ -9,8 +9,6 @@ The examples are structured as a **paywall** (seller) application and **buyer** 
 1. **Start the paywall server**: `cd paywall && pnpm dev`
 2. **Run buyer examples**: `cd buyer && pnpm run <script-name>`
 
-For convenience, there's a live paywall instance at https://ack-lab-paywall.catenalabs.com/ that you can test against without running the paywall locally.
-
 ## Paywall (Seller Side)
 
 The `paywall` directory contains a Next.js application implementing various ACK Lab SDK patterns:
