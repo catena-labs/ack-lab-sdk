@@ -101,7 +101,7 @@ export async function processMessage({
   sessionId
 }: Input): Promise<Output> {
   // Get or create session using sessionId from message
-  let currentSessionId = sessionId || randomUUID()
+  const currentSessionId = sessionId || randomUUID()
   let session = sessions.get(currentSessionId)
 
   if (!session) {
