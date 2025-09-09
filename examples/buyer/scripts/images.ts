@@ -106,6 +106,9 @@ async function checkPaymentRequestToken(paymentRequestToken: string) {
 
   const paymentOption = paymentRequest.paymentOptions[0]
 
+  // The Payment Option returned is for a testnet currency, which is swapped 1:1
+  // when the Payment Request was generated, but operates at a different precision
+  // so we need to account for that when comparing the amounts
   return (
     BigInt(paymentOption.amount) ===
     BigInt(
