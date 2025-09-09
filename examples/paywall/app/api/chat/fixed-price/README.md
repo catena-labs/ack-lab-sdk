@@ -183,7 +183,6 @@ To run both sides of the transaction:
 
 - `ACK_LAB_CLIENT_ID` - Your ACK Lab client ID
 - `ACK_LAB_CLIENT_SECRET` - Your ACK Lab client secret
-- `DATABASE_URL` - Your database URL (neon works)
 
 **Buyer:**
 
