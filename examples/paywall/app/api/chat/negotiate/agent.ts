@@ -1,12 +1,12 @@
 import { generateText, stepCountIs, tool } from "ai"
 import { openai } from "@ai-sdk/openai"
-import type { ModelMessage } from "ai"
 import { AckLabSdk } from "@ack-lab/sdk"
 import { z } from "zod"
 import * as v from "valibot"
 import { getDbPaymentRequest } from "@/db/queries/payment-requests"
 import { db } from "@/db"
 import { paymentRequestsTable } from "@/db/schema"
+import { randomUUID } from "crypto"
 
 // Our negotiating agent has two products that it can sell
 const products = [
@@ -59,18 +59,11 @@ If the buyer has offered a price less than full price, offer them at least
 some discount, but not too much.
 `
 
-// we will be passing these messages into the LLM a little further down the file
-const messages: ModelMessage[] = [
-  {
-    role: "system",
-    content: prompt
-  }
-]
-
 //when our agent receives a message from the counterparty agent, it is of this shape
 const inputSchema = v.object({
   message: v.string(),
-  receipt: v.optional(v.string())
+  receipt: v.optional(v.string()),
+  sessionId: v.optional(v.string())
 })
 
 type Input = v.InferInput<typeof inputSchema>
@@ -79,7 +72,8 @@ type Input = v.InferInput<typeof inputSchema>
 const _outputSchema = v.object({
   message: v.string(),
   paymentRequestToken: v.optional(v.string()),
-  research: v.optional(v.string())
+  research: v.optional(v.string()),
+  sessionId: v.optional(v.string())
 })
 
 type Output = v.InferOutput<typeof _outputSchema>
@@ -90,16 +84,47 @@ export const sdk = new AckLabSdk({
   clientSecret: process.env.ACK_LAB_CLIENT_SECRET!
 })
 
+// As this is an agent that performs a negotiation, we need to persist the conversation
+// somewhere. In this very basic example we use an in-memory store, but in a production
+// application you would want to use a database.
+// Define session data structure
+interface SessionData {
+  messages: Array<{ role: "user" | "assistant" | "system"; content: string }>
+}
+
+const sessions = new Map<string, SessionData>()
+
 // This function will be called by the ACK Lab SDK to process incoming messages
 export async function processMessage({
   message,
-  receipt
+  receipt,
+  sessionId
 }: Input): Promise<Output> {
-  console.log("Processing message: ", message)
+  // Get or create session using sessionId from message
+  let currentSessionId = sessionId || randomUUID()
+  let session = sessions.get(currentSessionId)
+
+  if (!session) {
+    session = {
+      messages: [
+        {
+          role: "system",
+          content: prompt
+        }
+      ]
+    }
+    sessions.set(currentSessionId, session)
+  }
+
+  // Save user message to session
+  session.messages.push({
+    role: "user",
+    content: message
+  })
 
   //if we receive a receipt, check that it's valid and return the research
   if (receipt) {
-    console.log("Receipt:", receipt)
+    console.log("Receipt received:", receipt)
 
     //verify the receipt is valid
     const { paymentRequestId } = await sdk.verifyPaymentReceipt(receipt)
@@ -122,14 +147,10 @@ export async function processMessage({
 
     return {
       message: "Thank you for your purchase! Here is your research",
-      research: product.content
+      research: product.content,
+      sessionId: currentSessionId
     }
   }
-
-  messages.push({
-    role: "user",
-    content: message
-  })
 
   let paymentRequestToken: string | undefined
 
@@ -137,7 +158,7 @@ export async function processMessage({
   const result = await generateText({
     model: openai("gpt-4o"),
     stopWhen: stepCountIs(3),
-    messages,
+    messages: session.messages,
     tools: {
       createPaymentRequest: tool({
         description: "Create a payment request",
@@ -187,7 +208,8 @@ export async function processMessage({
 
   return {
     message: result.text,
-    paymentRequestToken
+    paymentRequestToken,
+    sessionId: currentSessionId
   }
 }
 
