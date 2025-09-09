@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Paywall setup script
+# This script sets up the environment and database for the paywall example
+
+set -e
+
+echo "🚀 Setting up paywall example..."
+
+# Copy environment file
+echo "📄 Copying .env.example to .env..."
+cp .env.example .env
+
+# Setup database
+echo "🗄️  Setting up SQLite database..."
+npx drizzle-kit push
+
+# Success message with instructions
+echo ""
+echo "✅ Setup complete!"
+echo ""
+echo "📝 Next steps:"
+echo "1. Create an agent at https://ack-lab.catenalabs.com if you haven't already"
+echo "2. Copy your agent's API Key credentials into .env as ACK_LAB_CLIENT_ID and ACK_LAB_CLIENT_SECRET"
+echo ""
+echo "Start the server:"
+echo "$ pnpm run dev"
+echo ""

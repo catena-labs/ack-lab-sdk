@@ -1,0 +1,33 @@
+{
+  "name": "buyer",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "buy-chat-fixed-price": "tsx scripts/buy-chat-fixed-price.ts",
+    "buy-chat-llm": "tsx scripts/buy-chat-llm.ts",
+    "buy-fixed-price": "tsx scripts/buy-fixed-price.ts",
+    "check": "pnpm check:format && pnpm check:lint",
+    "check:format": "prettier --experimental-cli --check .",
+    "check:lint": "eslint .",
+    "images": "tsx scripts/images.ts",
+    "negotiate": "tsx scripts/negotiate.ts"
+  },
+  "dependencies": {
+    "@ack-lab/sdk": "../../",
+    "@ai-sdk/openai": "^2.0.22",
+    "ai": "^5.0.14",
+    "dotenv": "^17.2.1",
+    "zod": "^4.0.17"
+  },
+  "devDependencies": {
+    "eslint": "^9.35.0",
+    "prettier": "latest",
+    "tsx": "^4.20.5"
+  },
+  "packageManager": "pnpm@10.14.0"
+}

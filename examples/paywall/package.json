@@ -1,0 +1,42 @@
+{
+  "name": "paywall",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "next build --turbopack",
+    "check": "pnpm check:format && pnpm check:lint",
+    "check:format": "prettier --experimental-cli --check .",
+    "check:lint": "eslint .",
+    "dev": "next dev --turbopack",
+    "setup": "./bin/setup",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@ack-lab/sdk": "../../",
+    "@ai-sdk/anthropic": "^2.0.9",
+    "@ai-sdk/openai": "^2.0.22",
+    "@types/better-sqlite3": "^7.6.13",
+    "ai": "^5.0.14",
+    "better-sqlite3": "^12.2.0",
+    "dotenv": "^17.2.1",
+    "drizzle-orm": "^0.44.5",
+    "next": "15.5.2",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "zod": "^4.0.17"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.4",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.2",
+    "prettier": "^3.6.2",
+    "tailwindcss": "^4",
+    "tsx": "^4.20.5",
+    "typescript": "^5"
+  }
+}
