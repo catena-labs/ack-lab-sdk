@@ -108,4 +108,4 @@ async function checkPaymentRequestToken(paymentRequestToken: string) {
   )
 }
 
-main()
+main().catch(console.error)
