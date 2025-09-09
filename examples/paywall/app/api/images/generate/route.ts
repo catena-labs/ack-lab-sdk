@@ -7,7 +7,7 @@ import { consumeReceiptCredit, getOrCreateCredits } from "@/db/queries/credits"
 import * as v from "valibot"
 import { experimental_generateImage as generateImage } from "ai"
 import { openai } from "@ai-sdk/openai"
-import { AckLabSdk } from "../../../../../../dist"
+import { AckLabSdk } from "@ack-lab/sdk"
 import { presidents } from "@/data/presidents"
 
 const requestSchema = v.object({ receipt: v.string(), name: v.string() })
