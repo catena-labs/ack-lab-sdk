@@ -28,26 +28,26 @@ export async function POST(req: Request) {
   if (receipt) {
     console.log("Received a receipt from the buyer")
 
-    //verify the receipt is valid
+    // verify the receipt is valid
     const { paymentRequestId } = await sdk.verifyPaymentReceipt(receipt)
 
-    //check to see if we ever made a PRT for this receipt
+    // check to see if we ever made a PRT for this receipt
     const prt = await getDbPaymentRequest(paymentRequestId)
 
-    //if this happens it means somebody has sent us a valid receipt for a payment request we never made
+    // if this happens it means somebody has sent us a valid receipt for a payment request we never made
     if (!prt) {
       throw new Error("Payment request not found")
     }
 
-    //give the user what they paid for
+    // give the user what they paid for
     return new Response(content)
   } else {
     console.log(
       "Did not receive a receipt from the buyer, sending a payment request token"
     )
 
-    //each time we create a PRT, we will store it in the database so that when we receive a receipt
-    //we can validate that it was for a payment request created by us
+    // Each time we create a PRT, we will store it in the database so that when we receive a receipt
+    // we can validate that it was for a payment request created by us
     const prt = await db
       .insert(paymentRequestsTable)
       .values({
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
       })
       .returning()
 
-    //now create the payment request itself using the ACK Lab SDK
+    // Now create the payment request itself using the ACK Lab SDK
     const { paymentRequestToken } = await sdk.createPaymentRequest({
       amount: productPrice,
       currencyCode: "USD",

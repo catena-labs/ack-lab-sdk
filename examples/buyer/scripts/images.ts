@@ -14,13 +14,13 @@ const sdk = new AckLabSdk({
 const purchaseEndpoint = `${process.env.PAYWALL_HOST}/api/images/buy`
 const generateEndpoint = `${process.env.PAYWALL_HOST}/api/images/generate`
 
-const imagesToPurchase = 3
+const imagesToPurchase = 30
 const expectedPricePerImage = 1 //1 dollar per image
 
 async function main() {
-  console.log("Buying the right to generate 3 images")
+  console.log(`Buying the right to generate ${imagesToPurchase} images`)
 
-  // Purchase the right to generate 3 images
+  // Bulk purchase the right to generate images
   const response = await fetch(purchaseEndpoint, {
     method: "POST",
     body: JSON.stringify({
@@ -51,18 +51,26 @@ async function main() {
   console.log("\n\nExecuting payment...")
   const { receipt } = await sdk.executePayment(paymentRequestToken)
 
-  console.log("Payment made, generating images")
+  console.log("Payment made, generating images...")
 
-  //generate a couple of images (we bought 3 so we should have one left after this)
-  await generatePresidentImage(receipt)
-  await generatePresidentImage(receipt)
+  const imagesToGenerateNow = 5
 
-  console.log("\n\nDone! We purchased 3 images, and generated 2")
+  await Promise.all(
+    Array.from({ length: imagesToGenerateNow }, () =>
+      generatePresidentImage(receipt)
+    )
+  )
+
+  console.log(
+    `\n\nDone! We purchased ${imagesToPurchase} images, and generated ${imagesToGenerateNow}`
+  )
 }
 
 async function generatePresidentImage(receipt: string) {
   //pick a random president
   const president = presidents[Math.floor(Math.random() * presidents.length)]
+
+  console.log("Generating image for", president)
 
   const response = await fetch(generateEndpoint, {
     method: "POST",
