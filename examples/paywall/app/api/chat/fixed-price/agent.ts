@@ -9,7 +9,7 @@ const product = {
   id: "adama",
   title: "Research on William Adama",
   description: "All his wildest secrets",
-  price: 10,
+  price: 10 * 100, // 10 USD in cents
   content:
     "This is the super secret document you just paid all that money for. TL;DR: William Adama has no secrets."
 }
@@ -73,13 +73,13 @@ export async function processMessage({ receipt }: Input): Promise<Output> {
     //now create the payment request itself using the ACK Lab SDK
     const { paymentRequestToken } = await sdk.createPaymentRequest({
       description: `Purchase ${product.title}`,
-      amount: product.price * 100,
+      amount: product.price,
       currencyCode: "USD",
       id: prt[0].id
     })
 
     return {
-      message: `The product is available for $${product.price}. Here is a Payment Request Token you can use to purchase it.`,
+      message: `The product is available for $${(product.price / 100).toFixed(2)}. Here is a Payment Request Token you can use to purchase it.`,
       paymentRequestToken
     }
   }
