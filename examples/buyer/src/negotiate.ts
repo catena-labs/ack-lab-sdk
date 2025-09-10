@@ -8,18 +8,20 @@ import * as v from "valibot"
 import type { ModelMessage } from "ai"
 
 // When our agent sends messages to the counterparty agent, the messages are of this shape
-// There is always a message, and sometimes a receipt
+// There is always a message, and sometimes a receipt and sessionId
 const requestSchema = v.object({
   message: v.string(),
-  receipt: v.optional(v.string())
+  receipt: v.optional(v.string()),
+  sessionId: v.optional(v.string())
 })
 
 // When the counterparty agent sends messages to our agent, the messages are of this shape
-// There is always a message, and sometimes a payment request token or the research itself
+// There is always a message, and sometimes a payment request token, research, or sessionId
 const responseSchema = v.object({
   message: v.string(),
   paymentRequestToken: v.optional(v.string()),
-  research: v.optional(v.string())
+  research: v.optional(v.string()),
+  sessionId: v.optional(v.string())
 })
 
 //this is how much our agent should expect to pay at full price
@@ -32,13 +34,15 @@ but see if you can get it for ${expectedFullPrice - 5} USD or less.
 
 IMPORTANT: always use your buyResearch tool multiple times in a row until
 the negotiation is complete, you are not negotiating with the user but
-with a counterparty via the buyResearch tool. If the buyer offers you
-any discount at all, accept it.`
+with a counterparty via the buyResearch tool. If the seller offers you a discount,
+try to see if you can get a little more discount, but accept the first discount offered
+if the seller remains firm on that.`
 
 export class NegotiatingBuyerAgent {
   sdk: AckLabSdk
   messages: ModelMessage[]
   callAgent
+  sessionId?: string
 
   constructor({
     clientId,
@@ -108,8 +112,14 @@ export class NegotiatingBuyerAgent {
             console.log("sending message to seller agent:", message)
 
             const sellerResponse = await this.callAgent({
-              message
+              message,
+              sessionId: this.sessionId
             })
+
+            // Store sessionId from response for future calls
+            if (sellerResponse.sessionId) {
+              this.sessionId = sellerResponse.sessionId
+            }
 
             this.messages.push({
               role: "assistant",
@@ -143,7 +153,8 @@ export class NegotiatingBuyerAgent {
 
               const purchaseResponse = await this.callAgent({
                 message: `Here is my receipt for purchasing research on ${name}`,
-                receipt
+                receipt,
+                sessionId: this.sessionId
               })
 
               return assessCounterOffer(purchaseResponse)

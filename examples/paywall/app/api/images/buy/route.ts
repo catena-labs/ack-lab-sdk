@@ -22,14 +22,14 @@ export async function POST(req: Request) {
   const { count } = v.parse(requestSchema, await req.json())
   const price = count * pricePerImage
 
-  //each time we create a PRT, we will store it in the database so that when we receive a receipt
-  //we can validate that it was for a payment request created by us
+  // Each time we create a PRT, we will store it in the database so that when we receive a receipt
+  // we can validate that it was for a payment request created by us
   const prt = await db
     .insert(paymentRequestsTable)
     .values({ price, metadata: { credits: count } })
     .returning()
 
-  //now create the payment request itself using the ACK Lab SDK
+  // Now create the payment request itself using the ACK Lab SDK
   const { paymentRequestToken } = await sdk.createPaymentRequest({
     amount: price,
     currencyCode: "USD",

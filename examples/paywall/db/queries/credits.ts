@@ -46,6 +46,6 @@ export async function getOrCreateCredits(paymentRequestId: string) {
 export async function consumeReceiptCredit(receiptId: string) {
   await db
     .update(creditsTable)
-    .set({ remainingCredits: sql`remaining_credits - 1` })
+    .set({ remainingCredits: sql`${creditsTable.remainingCredits} - 1` })
     .where(eq(creditsTable.id, receiptId))
 }

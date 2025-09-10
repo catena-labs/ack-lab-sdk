@@ -169,6 +169,7 @@ When buyers submit receipts along with image generation requests, the system fir
   const commands = [
     "pnpm run buy-fixed-price      -> /api/fixed-price",
     "pnpm run buy-chat-fixed-price -> /api/chat/fixed-price",
+    "pnpm run buy-chat-llm         -> /api/chat/fixed-price (LLM tool-triggered)",
     "pnpm run negotiate            -> /api/chat/negotiate",
     "pnpm run images               -> /api/images/buy & /api/images/generate"
   ]

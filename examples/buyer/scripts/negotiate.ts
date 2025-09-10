@@ -16,4 +16,4 @@ async function main() {
   console.log(research)
 }
 
-main()
+main().catch(console.error)

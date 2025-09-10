@@ -7,7 +7,7 @@ import { consumeReceiptCredit, getOrCreateCredits } from "@/db/queries/credits"
 import * as v from "valibot"
 import { experimental_generateImage as generateImage } from "ai"
 import { openai } from "@ai-sdk/openai"
-import { AckLabSdk } from "../../../../../../dist"
+import { AckLabSdk } from "@ack-lab/sdk"
 import { presidents } from "@/data/presidents"
 
 const requestSchema = v.object({ receipt: v.string(), name: v.string() })
@@ -21,12 +21,12 @@ export const sdk = new AckLabSdk({
 export async function POST(req: Request) {
   const { receipt: receiptJwt, name } = v.parse(requestSchema, await req.json())
 
-  //make sure the buyer is asking for a 19th century US president
+  // make sure the buyer is asking for a 19th century US president
   if (!presidents.includes(name)) {
     return new Response("Invalid name", { status: 400 })
   }
 
-  //check the Receipt JWT is valid
+  // check the Receipt JWT is valid
   const { paymentRequestId } = await sdk.verifyPaymentReceipt(receiptJwt)
 
   if (!paymentRequestId) {
@@ -41,17 +41,17 @@ export async function POST(req: Request) {
     return new Response("No credits remaining", { status: 400 })
   }
 
-  //generate the image
+  // generate the image
   const { image } = await generateImage({
     model: openai.image("dall-e-3"),
     prompt: `US President ${name} sitting in a chair`
   })
 
-  //finally, consume the receipt credit.
-  //more sophisticated use cases could consume multiple credits at once
+  // finally, consume the receipt credit.
+  // more sophisticated use cases could consume multiple credits at once
   await consumeReceiptCredit(id)
 
-  //return the image
+  // return the image
   return new Response(image.uint8Array, {
     headers: {
       "Content-Type": "image/png",
