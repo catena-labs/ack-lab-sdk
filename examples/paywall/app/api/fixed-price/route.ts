@@ -1,4 +1,7 @@
 /**
+ * Simplified example code for ACK Lab Developer Preview use only. For use in test environment only.
+ * Use with value bearing assets or outside the test environment may result in permanent loss of value.
+ *
  * This endpoint sells a fixed price digital product for $10.
  * If the buyer sends a receipt, it will validate it and return the digital product.
  * If not, it will send a payment request token.

@@ -1,3 +1,7 @@
+/**
+ * Simplified example code for ACK Lab Developer Preview use only. For use in test environment only.
+ * Use with value bearing assets or outside the test environment may result in permanent loss of value.
+ */
 import { config } from "dotenv"
 import { AckLabSdk } from "@ack-lab/sdk"
 import * as v from "valibot"
