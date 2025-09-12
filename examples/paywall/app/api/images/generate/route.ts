@@ -1,4 +1,7 @@
 /**
+ * Simplified example code for ACK Lab Developer Preview use only. For use in test environment only.
+ * Use with value bearing assets or outside the test environment may result in permanent loss of value.
+ *
  * This endpoint generates images when a buyer presents a valid
  * receipt that has credits remaining. Each image generation
  * consumes one credit.
