@@ -5,7 +5,7 @@
  * This endpoint allows a buyer to purchase the right to generate a number of images.
  */
 import * as v from "valibot"
-import { AckLabSdk } from "@ack-lab/sdk"
+import { AckLabAgent } from "@ack-lab/sdk"
 import { db } from "@/db"
 import { paymentRequestsTable } from "@/db/schema"
 
@@ -14,9 +14,11 @@ const requestSchema = v.object({
 })
 
 // Create an ACK Lab SDK instance with the client ID and client secret for the Seller Agent in ACK Lab
-export const sdk = new AckLabSdk({
+export const sdk = new AckLabAgent({
   clientId: process.env.ACK_LAB_CLIENT_ID!,
-  clientSecret: process.env.ACK_LAB_CLIENT_SECRET!
+  clientSecret: process.env.ACK_LAB_CLIENT_SECRET!,
+  agentId: process.env.ACK_LAB_AGENT_ID!,
+  baseUrl: process.env.ACK_LAB_BASE_URL!
 })
 
 const pricePerImage = 1 * 100 // 1 USD in cents

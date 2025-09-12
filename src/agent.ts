@@ -45,9 +45,7 @@ async function jwtFetch(url: string, jwt: JwtString) {
 }
 
 /**
- * AckLabSdk - The main SDK for building authenticated agent-to-agent communication.
- *
- * This SDK provides high-level utilities for agent developers to easily implement
+ * This class provides high-level utilities for agent developers to easily implement
  * secure handshake protocols and authenticated messaging between agents. It handles
  * the complex cryptographic handshake flow and provides simple factory methods
  * for creating agent callers and request handlers.
@@ -56,12 +54,13 @@ async function jwtFetch(url: string, jwt: JwtString) {
  * ```ts
  * import * as v from "valibot"
  *
- * const sdk = new AckLabSdk({
+ * const agent = new AckLabAgent({
  *   clientId: "your-client-id",
- *   clientSecret: "your-client-secret"
+ *   clientSecret: "your-client-secret",
+ *   agentId: "your-agent-id"
  * })
  *
- * const callAgent = sdk.createAgentCaller(
+ * const callAgent = agent.createAgentCaller(
  *   "http://localhost:3000/chat",
  *   v.object({ message: v.string() }),
  *   v.string()
@@ -74,8 +73,8 @@ async function jwtFetch(url: string, jwt: JwtString) {
  * ```ts
  * import * as v from "valibot"
  *
- * const sdk = new AckLabSdk(config)
- * const handler = sdk.createRequestHandler(
+ * const agent = new AckLabAgent(config)
+ * const handler = agent.createRequestHandler(
  *   v.object({ message: v.string() }),
  *   async (input) => {
  *     return `You said: ${input.message}`
@@ -90,25 +89,27 @@ async function jwtFetch(url: string, jwt: JwtString) {
  * })
  * ```
  */
-export class AckLabSdk {
+export class AckLabAgent {
   private readonly apiClient: ApiClient
   private readonly handshakeClient: HandshakeClient
   private readonly resolver: Resolvable
 
   /**
-   * Create a new AckLabSdk instance.
+   * Create a new AckLabAgent instance.
    *
    * @param config - API client configuration containing credentials
    * @param config.clientId - Your agent's client ID from the AckLab platform
    * @param config.clientSecret - Your agent's client secret from the AckLab platform
+   * @param config.agentId - Your agent's ID from the AckLab platform
    * @param opts - Optional configuration
    * @param opts.resolver - Custom DID resolver (defaults to standard resolver)
    *
    * @example
    * ```ts
-   * const sdk = new AckLabSdk({
+   * const agent = new AckLabAgent({
    *   clientId: "jkbouswwx3jz1zvz7hxgs3ff",
-   *   clientSecret: "5a2b23d8408a1f7ea407eea43166553c2f50c8dbbee00b6f9ef159e1266601e8"
+   *   clientSecret: "5a2b23d8408a1f7ea407eea43166553c2f50c8dbbee00b6f9ef159e1266601e8",
+   *   agentId: "my-agent-id"
    * })
    * ```
    */
@@ -138,7 +139,7 @@ export class AckLabSdk {
    * ```ts
    * import * as v from "valibot"
    *
-   * const callMathAgent = sdk.createAgentCaller(
+   * const callMathAgent = agent.createAgentCaller(
    *   "http://localhost:3001/chat",
    *   v.object({ message: v.string() }),
    *   v.string()
@@ -154,7 +155,7 @@ export class AckLabSdk {
    * ```ts
    * import * as v from "valibot"
    *
-   * const callAgent = sdk.createAgentCaller(
+   * const callAgent = agent.createAgentCaller(
    *   "http://localhost:3001/chat",
    *   v.object({ message: v.string() }),
    *   v.string()
@@ -212,7 +213,7 @@ export class AckLabSdk {
    * ```ts
    * import * as v from "valibot"
    *
-   * const handler = sdk.createRequestHandler(
+   * const handler = agent.createRequestHandler(
    *   v.object({ message: v.string() }),
    *   async (input) => {
    *     return `Echo: ${input.message}`
@@ -234,7 +235,7 @@ export class AckLabSdk {
    * ```ts
    * import * as v from "valibot"
    *
-   * const handler = sdk.createRequestHandler(
+   * const handler = agent.createRequestHandler(
    *   v.object({ message: v.string() }),
    *   async ({ message }) => {
    *     // Use AI to generate response

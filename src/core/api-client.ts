@@ -43,13 +43,15 @@ export class ApiClient {
   private readonly baseUrl: string
   private readonly clientId: string
   private readonly clientSecret: string
+  private readonly agentId: string
 
   private _metadata: AgentMetadata | undefined = undefined
 
-  constructor({ baseUrl, clientId, clientSecret }: ApiClientConfig) {
+  constructor({ baseUrl, clientId, clientSecret, agentId }: ApiClientConfig) {
     this.baseUrl = baseUrl ?? "https://api.ack-lab.com"
     this.clientId = clientId
     this.clientSecret = clientSecret
+    this.agentId = agentId
   }
 
   async getMetadata(): Promise<AgentMetadata> {
@@ -68,9 +70,13 @@ export class ApiClient {
     return metadata
   }
 
+  agentPath(subPath: string): string {
+    return `/v1/agents/${this.agentId}/${subPath}`
+  }
+
   async getBalance(): Promise<Record<string, string>> {
     return this.request(
-      { method: "GET", path: "/v1/balance" },
+      { method: "GET", path: this.agentPath("balance") },
       v.record(v.string(), v.string())
     )
   }
@@ -89,7 +95,7 @@ export class ApiClient {
     return this.request(
       {
         method: "POST",
-        path: "/v1/payment-requests",
+        path: this.agentPath("payment-requests"),
         body: { id, amount, currencyCode, description }
       },
       v.object({ paymentRequestToken: v.string(), url: v.optional(v.string()) })
@@ -102,7 +108,7 @@ export class ApiClient {
     return this.request(
       {
         method: "POST",
-        path: "/v1/payments",
+        path: this.agentPath("payments"),
         body: { paymentRequestToken }
       },
       v.object({ receipt: jwtStringSchema, url: v.optional(v.string()) })
@@ -117,7 +123,7 @@ export class ApiClient {
    */
   async sign(payload: unknown): Promise<{ jwt: JwtString }> {
     return this.request(
-      { method: "POST", path: "/v1/sign", body: payload },
+      { method: "POST", path: this.agentPath("sign"), body: payload },
       v.object({ jwt: jwtStringSchema })
     )
   }
@@ -140,7 +146,7 @@ export class ApiClient {
     return this.request(
       {
         method: "POST",
-        path: "/v1/verifiable-presentations",
+        path: this.agentPath("verifiable-presentations"),
         body: { aud, challenge, nonce }
       },
       v.object({ presentation: jwtStringSchema })

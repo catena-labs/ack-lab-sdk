@@ -5,7 +5,7 @@ import { jwtStringSchema } from "agentcommercekit/schemas/valibot"
 import { Hono, type TypedResponse } from "hono"
 import { logger } from "hono/logger"
 import * as v from "valibot"
-import type { AckLabSdk } from "../sdk"
+import type { AckLabAgent } from "../agent"
 
 type AgentFn = (prompt: string) => Promise<string>
 
@@ -15,7 +15,7 @@ interface ServeAgentConfig {
 }
 
 interface ServeAuthedAgentConfig extends ServeAgentConfig {
-  sdk: AckLabSdk
+  sdk: AckLabAgent
 }
 
 export function serveAuthedAgent({

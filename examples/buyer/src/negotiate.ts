@@ -2,7 +2,7 @@
  * Simplified example code for ACK Lab Developer Preview use only. For use in test environment only.
  * Use with value bearing assets or outside the test environment may result in permanent loss of value.
  */
-import { AckLabSdk } from "@ack-lab/sdk"
+import { AckLabAgent } from "@ack-lab/sdk"
 import { verifyPaymentRequestToken, getDidResolver } from "agentcommercekit"
 
 import { generateText, tool, stepCountIs } from "ai"
@@ -43,7 +43,7 @@ try to see if you can get a little more discount, but accept the first discount 
 if the seller remains firm on that.`
 
 export class NegotiatingBuyerAgent {
-  sdk: AckLabSdk
+  sdk: AckLabAgent
   messages: ModelMessage[]
   callAgent
   sessionId?: string
@@ -55,9 +55,11 @@ export class NegotiatingBuyerAgent {
     clientId: string
     clientSecret: string
   }) {
-    this.sdk = new AckLabSdk({
+    this.sdk = new AckLabAgent({
       clientId,
-      clientSecret
+      clientSecret,
+      agentId: process.env.ACK_LAB_AGENT_ID!,
+      baseUrl: process.env.ACK_LAB_BASE_URL!
     })
 
     this.messages = [

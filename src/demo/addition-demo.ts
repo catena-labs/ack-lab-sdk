@@ -3,7 +3,7 @@ import { input } from "@inquirer/prompts"
 import { generateText, stepCountIs, tool } from "ai"
 import colors from "yoctocolors"
 import { z } from "zod"
-import { AckLabSdk } from "../sdk"
+import { AckLabAgent } from "../agent"
 import { serveAgent, serveAuthedAgent } from "./serve-agent"
 
 async function runAgentB(message: string) {
@@ -28,7 +28,7 @@ async function runAgentB(message: string) {
   return result.text
 }
 
-const ackLabSdk = new AckLabSdk({
+const ackLabSdk = new AckLabAgent({
   clientId: "<client-id>",
   clientSecret: "<client-secret>"
 })
@@ -84,7 +84,7 @@ async function main() {
   serveAuthedAgent({
     port: 7577,
     runAgent: runAgentB,
-    sdk: new AckLabSdk({
+    sdk: new AckLabAgent({
       clientId: "<client-id>",
       clientSecret: "<client-secret>"
     })

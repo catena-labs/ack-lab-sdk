@@ -4,7 +4,7 @@
  */
 import { generateText, stepCountIs, tool } from "ai"
 import { openai } from "@ai-sdk/openai"
-import { AckLabSdk } from "@ack-lab/sdk"
+import { AckLabAgent } from "@ack-lab/sdk"
 import { z } from "zod"
 import * as v from "valibot"
 import { getDbPaymentRequest } from "@/db/queries/payment-requests"
@@ -83,9 +83,11 @@ const _outputSchema = v.object({
 type Output = v.InferOutput<typeof _outputSchema>
 
 // Create an ACK Lab SDK instance with the client ID and client secret for the Seller Agent in ACK Lab
-export const sdk = new AckLabSdk({
+export const sdk = new AckLabAgent({
   clientId: process.env.ACK_LAB_CLIENT_ID!,
-  clientSecret: process.env.ACK_LAB_CLIENT_SECRET!
+  clientSecret: process.env.ACK_LAB_CLIENT_SECRET!,
+  agentId: process.env.ACK_LAB_AGENT_ID!,
+  baseUrl: process.env.ACK_LAB_BASE_URL!
 })
 
 // As this is an agent that performs a negotiation, we need to persist the conversation

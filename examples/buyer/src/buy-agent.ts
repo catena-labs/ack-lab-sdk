@@ -2,8 +2,7 @@
  * Simplified example code for ACK Lab Developer Preview use only. For use in test environment only.
  * Use with value bearing assets or outside the test environment may result in permanent loss of value.
  */
-
-import { AckLabSdk } from "@ack-lab/sdk"
+import { AckLabAgent } from "@ack-lab/sdk"
 
 import { generateText, tool, stepCountIs } from "ai"
 import { openai } from "@ai-sdk/openai"
@@ -26,7 +25,7 @@ const responseSchema = v.object({
 })
 
 export class ResearchPurchasingAgent {
-  sdk: AckLabSdk
+  sdk: AckLabAgent
   callAgent
 
   constructor({
@@ -36,9 +35,11 @@ export class ResearchPurchasingAgent {
     clientId: string
     clientSecret: string
   }) {
-    this.sdk = new AckLabSdk({
+    this.sdk = new AckLabAgent({
       clientId,
-      clientSecret
+      clientSecret,
+      agentId: process.env.ACK_LAB_AGENT_ID!,
+      baseUrl: process.env.ACK_LAB_BASE_URL!
     })
 
     this.callAgent = this.sdk.createAgentCaller(

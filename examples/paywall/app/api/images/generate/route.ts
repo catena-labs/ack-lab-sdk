@@ -10,15 +10,17 @@ import { consumeReceiptCredit, getOrCreateCredits } from "@/db/queries/credits"
 import * as v from "valibot"
 import { experimental_generateImage as generateImage } from "ai"
 import { openai } from "@ai-sdk/openai"
-import { AckLabSdk } from "@ack-lab/sdk"
+import { AckLabAgent } from "@ack-lab/sdk"
 import { presidents } from "@/data/presidents"
 
 const requestSchema = v.object({ receipt: v.string(), name: v.string() })
 
 // Create an ACK Lab SDK instance with the client ID and client secret for the Seller Agent in ACK Lab
-export const sdk = new AckLabSdk({
+export const sdk = new AckLabAgent({
   clientId: process.env.ACK_LAB_CLIENT_ID!,
-  clientSecret: process.env.ACK_LAB_CLIENT_SECRET!
+  clientSecret: process.env.ACK_LAB_CLIENT_SECRET!,
+  agentId: process.env.ACK_LAB_AGENT_ID!,
+  baseUrl: process.env.ACK_LAB_BASE_URL!
 })
 
 export async function POST(req: Request) {
