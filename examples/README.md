@@ -59,34 +59,34 @@ The `buyer` directory contains 5 runnable examples demonstrating different inter
 
 ### `pnpm run buy-fixed-price`
 
-**What it does**: Purchases a digital product using direct HTTP requests to the simplest paywall endpoint.
-**Paywall side**: Uses `/api/fixed-price` - the most basic ACK Lab SDK implementation
-**Flow**: Makes HTTP POST → receives PRT → pays → submits receipt → gets digital content
-**Learn more**: [Fixed-Price README](paywall/app/api/fixed-price/README.md)
+- **What it does**: Purchases a digital product using direct HTTP requests to the simplest paywall endpoint.
+- **Paywall side**: Uses `/api/fixed-price` - the most basic ACK Lab SDK implementation
+- **Flow**: Makes HTTP POST → receives PRT → pays → submits receipt → gets digital content
+- **Learn more**: [Fixed-Price README](paywall/app/api/fixed-price/README.md)
 
 ### `pnpm run buy-chat-fixed-price`
 
-**What it does**: Purchases research through secure agent-to-agent communication at a fixed price.
-**Paywall side**: Uses `/api/chat/fixed-price` - conversational commerce with agent messaging
-**Flow**: Sends agent message → receives PRT → pays → sends receipt via agent → gets research
-**Learn more**: [Fixed-Price Chat README](paywall/app/api/chat/fixed-price/README.md)
+- **What it does**: Purchases research through secure agent-to-agent communication at a fixed price.
+- **Paywall side**: Uses `/api/chat/fixed-price` - conversational commerce with agent messaging
+- **Flow**: Sends agent message → receives PRT → pays → sends receipt via agent → gets research
+- **Learn more**: [Fixed-Price Chat README](paywall/app/api/chat/fixed-price/README.md)
 
 ### `pnpm run negotiate`
 
-**What it does**: Demonstrates AI-vs-AI negotiation where both buyer and seller agents negotiate autonomously.
-**Paywall side**: Uses `/api/chat/negotiate` - AI-powered price negotiation with business constraints
-**Flow**: AI agents negotiate → price agreed → payment executed → receipt submitted → research delivered
-**Learn more**: [Negotiation Chat README](paywall/app/api/chat/negotiate/README.md)
+- **What it does**: Demonstrates AI-vs-AI negotiation where both buyer and seller agents negotiate autonomously.
+- **Paywall side**: Uses `/api/chat/negotiate` - AI-powered price negotiation with business constraints
+- **Flow**: AI agents negotiate → price agreed → payment executed → receipt submitted → research delivered
+- **Learn more**: [Negotiation Chat README](paywall/app/api/chat/negotiate/README.md)
 
 ### `pnpm run images`
 
-**What it does**: Complete credit-based workflow - purchases image credits, then generates and saves president images.
-**Paywall side**: Uses both `/api/images/buy` and `/api/images/generate` - credit purchase and consumption
-**Flow**: Buys 3 credits → pays PRT → generates 2 images → saves to `./images/` directory
-**Learn more**: [Image Credits README](paywall/app/api/images/buy/README.md) and [Image Generation README](paywall/app/api/images/generate/README.md)
+- **What it does**: Complete credit-based workflow - purchases image credits, then generates and saves president images.
+- **Paywall side**: Uses both `/api/images/buy` and `/api/images/generate` - credit purchase and consumption
+- **Flow**: Buys 3 credits → pays PRT → generates 2 images → saves to `./images/` directory
+- **Learn more**: [Image Credits README](paywall/app/api/images/buy/README.md) and [Image Generation README](paywall/app/api/images/generate/README.md)
 
 ### `pnpm run buy-chat-llm`
 
-**What it does**: Uses an LLM-powered buyer agent to interact with seller endpoints (implementation varies).
-**Paywall side**: Can interact with various chat endpoints depending on implementation
-**Flow**: LLM-driven buyer behavior with autonomous decision making
+- **What it does**: Uses an LLM-powered buyer agent to interact with seller endpoints (implementation varies).
+- **Paywall side**: Can interact with various chat endpoints depending on implementation
+- **Flow**: LLM-driven buyer behavior with autonomous decision making

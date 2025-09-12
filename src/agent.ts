@@ -198,7 +198,7 @@ export class AckLabAgent {
   }
 
   /**
-   * Create a request handler for processing incoming agent messages.
+   * Create a request handler for processing incoming messages from other agents.
    *
    * This method returns a function that can be integrated with any HTTP server
    * framework to handle incoming JWT messages from other agents. It automatically
@@ -299,7 +299,8 @@ export class AckLabAgent {
   }
 
   /**
-   * Create a payment request for the agent.
+   * Create a payment request for the agent. This will generate a payment request token
+   * that another agent can use to pay this one.
    *
    * @param params - The parameters for the payment request
    * @param params.id - The ID of the payment request
@@ -318,7 +319,8 @@ export class AckLabAgent {
   }
 
   /**
-   * Execute a payment request for the agent.
+   * Execute a payment request for the agent. Use this to have this agent pay another agent
+   * via a payment request token.
    *
    * @param paymentRequestToken - The signed payment request token to pay
    * @returns Promise resolving to the payment result

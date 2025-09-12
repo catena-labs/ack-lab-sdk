@@ -15,17 +15,17 @@ interface ServeAgentConfig {
 }
 
 interface ServeAuthedAgentConfig extends ServeAgentConfig {
-  sdk: AckLabAgent
+  agent: AckLabAgent
 }
 
 export function serveAuthedAgent({
   port,
   runAgent,
-  sdk
+  agent
 }: ServeAuthedAgentConfig) {
   console.log(`> Starting local server...`)
 
-  const agentHandler = sdk.createRequestHandler(v.string(), runAgent)
+  const agentHandler = agent.createRequestHandler(v.string(), runAgent)
 
   const app = new Hono()
 

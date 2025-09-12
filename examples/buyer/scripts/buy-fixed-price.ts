@@ -8,7 +8,7 @@ import { verifyPaymentRequestToken, getDidResolver } from "agentcommercekit"
 
 config()
 
-const sdk = new AckLabAgent({
+const agent = new AckLabAgent({
   baseUrl: process.env.ACK_LAB_BASE_URL!,
   clientId: process.env.ACK_LAB_CLIENT_ID!,
   clientSecret: process.env.ACK_LAB_CLIENT_SECRET!,
@@ -49,7 +49,7 @@ async function main() {
   }
 
   console.log("\n\nExecuting payment...")
-  const { receipt } = await sdk.executePayment(paymentRequestToken)
+  const { receipt } = await agent.executePayment(paymentRequestToken)
 
   console.log("Payment made, sending receipt to seller...")
   console.log(receipt)

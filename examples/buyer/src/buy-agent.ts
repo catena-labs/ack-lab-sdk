@@ -25,7 +25,7 @@ const responseSchema = v.object({
 })
 
 export class ResearchPurchasingAgent {
-  sdk: AckLabAgent
+  agent: AckLabAgent
   callAgent
 
   constructor({
@@ -35,14 +35,14 @@ export class ResearchPurchasingAgent {
     clientId: string
     clientSecret: string
   }) {
-    this.sdk = new AckLabAgent({
+    this.agent = new AckLabAgent({
       clientId,
       clientSecret,
       agentId: process.env.ACK_LAB_AGENT_ID!,
       baseUrl: process.env.ACK_LAB_BASE_URL!
     })
 
-    this.callAgent = this.sdk.createAgentCaller(
+    this.callAgent = this.agent.createAgentCaller(
       `${process.env.PAYWALL_HOST}/api/chat/fixed-price`,
       requestSchema,
       responseSchema
@@ -83,7 +83,7 @@ export class ResearchPurchasingAgent {
 
               console.log("\n\nExecuting payment...")
               const { receipt } =
-                await this.sdk.executePayment(paymentRequestToken)
+                await this.agent.executePayment(paymentRequestToken)
 
               console.log("\n\nPayment made, here is the receipt:")
               console.log(receipt)

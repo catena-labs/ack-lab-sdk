@@ -72,7 +72,7 @@ createPaymentRequest: tool({
       .returning()
 
     // Create ACK Lab payment request
-    const { paymentRequestToken } = await sdk.createPaymentRequest({
+    const { paymentRequestToken } = await agent.createPaymentRequest({
       description: description,
       amount: product.price * 100, // Convert to cents
       currencyCode: "USD",
@@ -93,7 +93,7 @@ When buyers submit receipts, the system validates and delivers content:
 ```typescript
 if (receipt) {
   // Verify receipt cryptographically
-  const { paymentRequestId } = await sdk.verifyPaymentReceipt(receipt)
+  const { paymentRequestId } = await agent.verifyPaymentReceipt(receipt)
 
   // Verify we created this payment request
   const prt = await getDbPaymentRequest(paymentRequestId)

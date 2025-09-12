@@ -14,7 +14,7 @@ const requestSchema = v.object({
 })
 
 // Create an ACK Lab SDK instance with the client ID and client secret for the Seller Agent in ACK Lab
-export const sdk = new AckLabAgent({
+export const agent = new AckLabAgent({
   clientId: process.env.ACK_LAB_CLIENT_ID!,
   clientSecret: process.env.ACK_LAB_CLIENT_SECRET!,
   agentId: process.env.ACK_LAB_AGENT_ID!,
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     .returning()
 
   // Now create the payment request itself using the ACK Lab SDK
-  const { paymentRequestToken } = await sdk.createPaymentRequest({
+  const { paymentRequestToken } = await agent.createPaymentRequest({
     amount: price,
     currencyCode: "USD",
     description: `Purchase of ${count} image generation credits`,

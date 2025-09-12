@@ -34,7 +34,7 @@ const prt = await db
   .returning()
 
 // Create the payment request using ACK Lab SDK
-const { paymentRequestToken } = await sdk.createPaymentRequest({
+const { paymentRequestToken } = await agent.createPaymentRequest({
   description: `Purchase ${product.title}`,
   amount: product.price * 100, // Amount in cents
   currencyCode: "USD",
@@ -55,7 +55,7 @@ After the buyer pays using the PRT, they receive a receipt which they can submit
 ```typescript
 if (receipt) {
   // Verify the receipt is cryptographically valid
-  const { paymentRequestId } = await sdk.verifyPaymentReceipt(receipt)
+  const { paymentRequestId } = await agent.verifyPaymentReceipt(receipt)
 
   // Check that we actually created this payment request
   const prt = await getDbPaymentRequest(paymentRequestId)
@@ -74,7 +74,7 @@ if (receipt) {
 
 **Why we do this:**
 
-- `sdk.verifyPaymentReceipt()` cryptographically validates that the receipt is authentic and hasn't been tampered with
+- `agent.verifyPaymentReceipt()` cryptographically validates that the receipt is authentic and hasn't been tampered with
 - Checking our database ensures we only deliver products for payments we actually requested - this prevents replay attacks where someone might try to use a valid receipt from a different merchant
 - The two-step verification (cryptographic + database lookup) provides strong security guarantees
 
@@ -107,7 +107,7 @@ const outputSchema = v.object({
 The ACK Lab SDK provides a request handler that manages the secure communication:
 
 ```typescript
-export const handler = sdk.createRequestHandler(inputSchema, processMessage)
+export const handler = agent.createRequestHandler(inputSchema, processMessage)
 ```
 
 **Why we do this:**
@@ -138,7 +138,7 @@ This allows tracking of:
 
 ## Security Considerations
 
-1. **Receipt Validation**: Always verify receipts cryptographically using `sdk.verifyPaymentReceipt()`
+1. **Receipt Validation**: Always verify receipts cryptographically using `agent.verifyPaymentReceipt()`
 2. **Payment Request Verification**: Check that receipts correspond to payment requests you actually created
 3. **Database Integrity**: Store payment request details before creating the ACK Lab payment request
 4. **Error Handling**: Fail securely when receipts don't match your records
@@ -162,7 +162,7 @@ The buyer agent (`buyer/scripts/buy-chat-fixed-price.ts`) implements:
 
 1. Sends initial message requesting research on William Adama
 2. Receives payment request token from the seller
-3. Executes payment using `sdk.executePayment()`
+3. Executes payment using `agent.executePayment()`
 4. Submits receipt back to seller with the same message
 5. Receives and displays the purchased research content
 

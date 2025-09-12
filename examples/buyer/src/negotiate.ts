@@ -43,7 +43,7 @@ try to see if you can get a little more discount, but accept the first discount 
 if the seller remains firm on that.`
 
 export class NegotiatingBuyerAgent {
-  sdk: AckLabAgent
+  agent: AckLabAgent
   messages: ModelMessage[]
   callAgent
   sessionId?: string
@@ -55,7 +55,7 @@ export class NegotiatingBuyerAgent {
     clientId: string
     clientSecret: string
   }) {
-    this.sdk = new AckLabAgent({
+    this.agent = new AckLabAgent({
       clientId,
       clientSecret,
       agentId: process.env.ACK_LAB_AGENT_ID!,
@@ -69,7 +69,7 @@ export class NegotiatingBuyerAgent {
       }
     ]
 
-    this.callAgent = this.sdk.createAgentCaller(
+    this.callAgent = this.agent.createAgentCaller(
       `${process.env.PAYWALL_HOST}/api/chat/negotiate`,
       requestSchema,
       responseSchema
@@ -150,7 +150,7 @@ export class NegotiatingBuyerAgent {
                 "\n\nwe have reached a price agreement, execute the payment"
               )
               //we have reached a price agreement, execute the payment
-              const { receipt } = await this.sdk.executePayment(
+              const { receipt } = await this.agent.executePayment(
                 negotiation.paymentRequestToken
               )
 

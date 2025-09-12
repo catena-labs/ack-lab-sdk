@@ -10,7 +10,7 @@ import fs, { mkdirSync } from "fs"
 
 config()
 
-const sdk = new AckLabAgent({
+const agent = new AckLabAgent({
   clientId: process.env.ACK_LAB_CLIENT_ID!,
   clientSecret: process.env.ACK_LAB_CLIENT_SECRET!,
   agentId: process.env.ACK_LAB_AGENT_ID!,
@@ -55,7 +55,7 @@ async function main() {
   }
 
   console.log("\n\nExecuting payment...")
-  const { receipt } = await sdk.executePayment(paymentRequestToken)
+  const { receipt } = await agent.executePayment(paymentRequestToken)
 
   console.log("Payment made, generating images...")
 

@@ -8,7 +8,7 @@ import * as v from "valibot"
 
 config()
 
-const sdk = new AckLabAgent({
+const agent = new AckLabAgent({
   clientId: process.env.ACK_LAB_CLIENT_ID!,
   clientSecret: process.env.ACK_LAB_CLIENT_SECRET!,
   agentId: process.env.ACK_LAB_AGENT_ID!,
@@ -30,7 +30,7 @@ const responseSchema = v.object({
   research: v.optional(v.string())
 })
 
-const callAgent = sdk.createAgentCaller(
+const callAgent = agent.createAgentCaller(
   `${process.env.PAYWALL_HOST}/api/chat/fixed-price`,
   requestSchema,
   responseSchema
@@ -51,7 +51,7 @@ async function main() {
   console.log(paymentRequestToken)
 
   console.log("\n\nExecuting payment...")
-  const { receipt } = await sdk.executePayment(paymentRequestToken)
+  const { receipt } = await agent.executePayment(paymentRequestToken)
 
   console.log("\n\nPayment made, sending receipt to seller...")
   console.log(receipt)

@@ -28,12 +28,13 @@ async function runAgentB(message: string) {
   return result.text
 }
 
-const ackLabSdk = new AckLabAgent({
+const ackLabAgent = new AckLabAgent({
   clientId: "<client-id>",
-  clientSecret: "<client-secret>"
+  clientSecret: "<client-secret>",
+  agentId: "<agent-id>"
 })
 
-const callAgent = ackLabSdk.createAgentCaller(
+const callAgent = ackLabAgent.createAgentCaller(
   "http://localhost:7577/chat",
   z.string(),
   z.string()
@@ -84,9 +85,10 @@ async function main() {
   serveAuthedAgent({
     port: 7577,
     runAgent: runAgentB,
-    sdk: new AckLabAgent({
+    agent: new AckLabAgent({
       clientId: "<client-id>",
-      clientSecret: "<client-secret>"
+      clientSecret: "<client-secret>",
+      agentId: "<agent-id>"
     })
   })
 

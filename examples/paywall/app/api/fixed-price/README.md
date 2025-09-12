@@ -41,7 +41,7 @@ When a receipt is provided, the system validates and delivers the product:
 ```typescript
 if (receipt) {
   //verify the receipt is valid
-  const { paymentRequestId } = await sdk.verifyPaymentReceipt(receipt)
+  const { paymentRequestId } = await agent.verifyPaymentReceipt(receipt)
 
   //check to see if we ever made a PRT for this receipt
   const prt = await getDbPaymentRequest(paymentRequestId)
@@ -77,7 +77,7 @@ const prt = await db
   .returning()
 
 //now create the payment request itself using the ACK Lab SDK
-const { paymentRequestToken } = await sdk.createPaymentRequest({
+const { paymentRequestToken } = await agent.createPaymentRequest({
   amount: productPrice,
   currencyCode: "USD",
   description: "Test payment request",
@@ -124,7 +124,7 @@ The buyer script (`buyer/scripts/buy-fixed-price.ts`) implements:
 1. Makes POST request to `/api/fixed-price` without receipt
 2. Receives 402 status with Payment Request Token
 3. Validates the PRT amount matches expected price ($10)
-4. Executes payment using `sdk.executePayment()`
+4. Executes payment using `agent.executePayment()`
 5. Makes second POST request with receipt to receive digital product
 
 ## Environment Variables

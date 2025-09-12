@@ -33,7 +33,7 @@ Start the paywall server first (`cd ../paywall && pnpm dev`) or use the live ins
 - Makes POST to `/api/fixed-price` with empty body
 - Receives 402 status with Payment Request Token
 - Validates PRT amount using `verifyPaymentRequestToken()`
-- Executes payment with `sdk.executePayment()`
+- Executes payment with `agent.executePayment()`
 - Makes second POST with receipt to get digital product
 
 **Key techniques**: Direct HTTP requests, PRT validation, receipt submission
@@ -64,7 +64,7 @@ Start the paywall server first (`cd ../paywall && pnpm dev`) or use the live ins
 - Creates `AgentCaller` with request/response schemas using Valibot
 - Sends structured message: `{message: "Hello I would like to buy research on William Adama"}`
 - Receives response with `paymentRequestToken`
-- Executes payment using `sdk.executePayment()`
+- Executes payment using `agent.executePayment()`
 - Sends second message with receipt: `{message: "...", receipt}`
 - Receives research content in structured response
 
@@ -91,7 +91,7 @@ Start the paywall server first (`cd ../paywall && pnpm dev`) or use the live ins
 **Under the covers**:
 
 - **Buyer AI**: GPT-4o with negotiation strategy (target: $15 or less)
-- **Communication**: Uses `sdk.createAgentCaller()` for secure messaging
+- **Communication**: Uses `agent.createAgentCaller()` for secure messaging
 - **Negotiation loop**: LLM calls `buyResearch` tool repeatedly until agreement
 - **Price validation**: Validates PRT amounts using `verifyPaymentRequestToken()`
 - **Decision logic**: Accepts offers below $20 (full price), continues negotiating otherwise
