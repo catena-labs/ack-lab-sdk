@@ -58,8 +58,7 @@ export class NegotiatingBuyerAgent {
     this.agent = new AckLabAgent({
       clientId,
       clientSecret,
-      agentId: process.env.ACK_LAB_AGENT_ID!,
-      baseUrl: process.env.ACK_LAB_BASE_URL!
+      agentId: process.env.ACK_LAB_AGENT_ID!
     })
 
     this.messages = [
