@@ -8,6 +8,7 @@ import { generateText, tool, stepCountIs } from "ai"
 import { openai } from "@ai-sdk/openai"
 import { z } from "zod"
 import * as v from "valibot"
+import { logToolErrors } from "./utils/log-tool-errors"
 
 // When our agent sends messages to the counterparty agent, the messages are of this shape
 // There is always a message, and sometimes a receipt
@@ -51,7 +52,7 @@ export class ResearchPurchasingAgent {
   async purchaseResearch(name: string) {
     let researchResult: string | undefined
 
-    await generateText({
+    const { steps } = await generateText({
       model: openai("gpt-4o"),
       stopWhen: stepCountIs(10),
       tools: {
@@ -112,6 +113,8 @@ export class ResearchPurchasingAgent {
         }
       ]
     })
+
+    logToolErrors(steps)
 
     return researchResult
   }

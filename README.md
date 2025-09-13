@@ -12,20 +12,68 @@ npm install @ack-lab/sdk
 
 ## Quick Start
 
+### Single Agent
+
+When you have a single ACK Lab Agent to control, you can use the `AckLabAgent` class to create an Agent instance:
+
 ```ts
 import { AckLabAgent } from "@ack-lab/sdk"
-import * as v from "valibot" // or any Standard Schema compliant library
 
+// Create an agent instance with your client ID, secret, and agent ID
 const agent = new AckLabAgent({
   clientId: "your-client-id",
   clientSecret: "your-client-secret",
   agentId: "your-agent-id"
 })
+
+// Generate a request for our agent to get paid
+const paymentRequest = await agent.createPaymentRequest({
+  id: crypto.randomUUID(),
+  amount: 100,
+  currencyCode: "USD",
+  description: "Service fee"
+})
+
+// Send the payment request token to the other agent
+...
 ```
 
 See an example of using this SDK in [./src/demo/addition-demo.ts](./src/demo/addition-demo.ts).
 
 To create your Client ID & Secret, sign up for a free account at [ACK-Lab](https://ack-lab.catenalabs.com). Create an Agent in the dashboard, copy the agent ID from the URL, and create a Client ID & Secret in the API Keys tab.
+
+### Multiple Agents
+
+When you have multiple ACK Lab Agents to control, use an organization-level API key and the `AckLabSdk` class to create an SDK instance that can create and control multiple Agents:
+
+```ts
+import { AckLabSdk } from "@ack-lab/sdk"
+
+// The SDK instance can be used to control multiple agents in the same organization
+const sdk = new AckLabSdk({
+  clientId: "your-client-id",
+  clientSecret: "your-client-secret"
+})
+
+// We do not need to pass in the client ID and secret each time
+const agent = sdk.agent({ agentId: "first-agent-id" })
+const otherAgent = sdk.agent({ agentId: "second-agent-id" })
+
+const paymentRequest = await agent.createPaymentRequest({
+  id: crypto.randomUUID(),
+  amount: 100,
+  currencyCode: "USD",
+  description: "Service fee"
+})
+
+const result = await otherAgent.executePayment(
+  paymentRequest.paymentRequestToken
+)
+
+const { receipt, paymentRequestId } = await agent.verifyPaymentReceipt(
+  result.receipt
+)
+```
 
 ## Usage
 
@@ -124,7 +172,7 @@ Check out the [examples README](./examples/README.md) to find out more and run t
 ### Constructor
 
 ```ts
-new AckLabAgent(config: ApiClientConfig, opts?: { resolver?: Resolvable })
+new AckLabAgent(config: AckLabAgentConfig, opts?: { resolver?: Resolvable })
 ```
 
 Create a new agent instance with your client credentials.

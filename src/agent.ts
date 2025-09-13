@@ -10,7 +10,7 @@ import {
 import { jwtStringSchema } from "agentcommercekit/schemas/valibot"
 import * as s from "standard-parse"
 import * as v from "valibot"
-import { ApiClient, HandshakeClient, type ApiClientConfig } from "./core"
+import { ApiClient, HandshakeClient, type AckLabAgentConfig } from "./core"
 
 type MessageHandler<TInput> = (input: TInput) => Promise<unknown>
 type RequestHandler = (jwt: JwtString) => Promise<{ jwt: JwtString }>
@@ -113,7 +113,7 @@ export class AckLabAgent {
    * })
    * ```
    */
-  constructor(config: ApiClientConfig, opts?: { resolver?: Resolvable }) {
+  constructor(config: AckLabAgentConfig, opts?: { resolver?: Resolvable }) {
     this.resolver = opts?.resolver ?? getDidResolver()
 
     this.apiClient = new ApiClient(config)

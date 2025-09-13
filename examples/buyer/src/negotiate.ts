@@ -2,7 +2,7 @@
  * Simplified example code for ACK Lab Developer Preview use only. For use in test environment only.
  * Use with value bearing assets or outside the test environment may result in permanent loss of value.
  */
-import { AckLabAgent } from "@ack-lab/sdk"
+import { AckLabAgent, AckLabSdk } from "@ack-lab/sdk"
 import { verifyPaymentRequestToken, getDidResolver } from "agentcommercekit"
 
 import { generateText, tool, stepCountIs } from "ai"
@@ -10,6 +10,7 @@ import { openai } from "@ai-sdk/openai"
 import { z } from "zod"
 import * as v from "valibot"
 import type { ModelMessage } from "ai"
+import { logToolErrors } from "./utils/log-tool-errors"
 
 // When our agent sends messages to the counterparty agent, the messages are of this shape
 // There is always a message, and sometimes a receipt and sessionId
@@ -44,22 +45,28 @@ if the seller remains firm on that.`
 
 export class NegotiatingBuyerAgent {
   agent: AckLabAgent
+  agentId: string
   messages: ModelMessage[]
   callAgent
   sessionId?: string
+  sdk: AckLabSdk
 
   constructor({
     clientId,
-    clientSecret
+    clientSecret,
+    agentId
   }: {
     clientId: string
     clientSecret: string
+    agentId: string
   }) {
-    this.agent = new AckLabAgent({
+    this.sdk = new AckLabSdk({
       clientId,
-      clientSecret,
-      agentId: process.env.ACK_LAB_AGENT_ID!
+      clientSecret
     })
+
+    this.agentId = agentId
+    this.agent = this.sdk.agent(agentId)
 
     this.messages = [
       {
@@ -82,7 +89,7 @@ export class NegotiatingBuyerAgent {
         Keep on negotiating until the seller agrees to a price of $15 or less.`
     })
 
-    const { text } = await generateText({
+    const { text, steps } = await generateText({
       model: openai("gpt-4o"),
       stopWhen: stepCountIs(10),
       messages: this.messages,
@@ -171,6 +178,8 @@ export class NegotiatingBuyerAgent {
         })
       }
     })
+
+    logToolErrors(steps)
 
     return text
   }

@@ -12,7 +12,7 @@ import { stringify } from "safe-stable-stringify"
 import * as v from "valibot"
 import { sha256 } from "../utils/sha-256"
 import { ApiError, apiErrorIssuesSchema } from "./errors/api-error"
-import type { ApiClientConfig } from "./types"
+import type { AckLabAgentConfig } from "./types"
 
 export interface RequestOptions {
   method: string
@@ -47,7 +47,7 @@ export class ApiClient {
 
   private _metadata: AgentMetadata | undefined = undefined
 
-  constructor({ baseUrl, clientId, clientSecret, agentId }: ApiClientConfig) {
+  constructor({ baseUrl, clientId, clientSecret, agentId }: AckLabAgentConfig) {
     this.baseUrl = baseUrl ?? "https://api.ack-lab.com"
     this.clientId = clientId
     this.clientSecret = clientSecret
