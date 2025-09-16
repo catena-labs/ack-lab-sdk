@@ -2,13 +2,13 @@
  * Simplified example code for ACK Lab Developer Preview use only. For use in test environment only.
  * Use with value bearing assets or outside the test environment may result in permanent loss of value.
  */
-
-import { AckLabSdk } from "@ack-lab/sdk"
+import { AckLabAgent } from "@ack-lab/sdk"
 
 import { generateText, tool, stepCountIs } from "ai"
 import { openai } from "@ai-sdk/openai"
 import { z } from "zod"
 import * as v from "valibot"
+import { logToolErrors } from "./utils/log-tool-errors"
 
 // When our agent sends messages to the counterparty agent, the messages are of this shape
 // There is always a message, and sometimes a receipt
@@ -26,7 +26,7 @@ const responseSchema = v.object({
 })
 
 export class ResearchPurchasingAgent {
-  sdk: AckLabSdk
+  agent: AckLabAgent
   callAgent
 
   constructor({
@@ -36,12 +36,13 @@ export class ResearchPurchasingAgent {
     clientId: string
     clientSecret: string
   }) {
-    this.sdk = new AckLabSdk({
+    this.agent = new AckLabAgent({
       clientId,
-      clientSecret
+      clientSecret,
+      agentId: process.env.ACK_LAB_AGENT_ID!
     })
 
-    this.callAgent = this.sdk.createAgentCaller(
+    this.callAgent = this.agent.createAgentCaller(
       `${process.env.PAYWALL_HOST}/api/chat/fixed-price`,
       requestSchema,
       responseSchema
@@ -51,7 +52,7 @@ export class ResearchPurchasingAgent {
   async purchaseResearch(name: string) {
     let researchResult: string | undefined
 
-    await generateText({
+    const { steps } = await generateText({
       model: openai("gpt-4o"),
       stopWhen: stepCountIs(10),
       tools: {
@@ -82,7 +83,7 @@ export class ResearchPurchasingAgent {
 
               console.log("\n\nExecuting payment...")
               const { receipt } =
-                await this.sdk.executePayment(paymentRequestToken)
+                await this.agent.executePayment(paymentRequestToken)
 
               console.log("\n\nPayment made, here is the receipt:")
               console.log(receipt)
@@ -112,6 +113,8 @@ export class ResearchPurchasingAgent {
         }
       ]
     })
+
+    logToolErrors(steps)
 
     return researchResult
   }

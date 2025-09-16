@@ -6,16 +6,17 @@
  * If the buyer sends a receipt, it will validate it and return the digital product.
  * If not, it will send a payment request token.
  */
-import { AckLabSdk } from "@ack-lab/sdk"
+import { AckLabAgent } from "@ack-lab/sdk"
 import * as v from "valibot"
 import { getDbPaymentRequest } from "@/db/queries/payment-requests"
 import { db } from "@/db"
 import { paymentRequestsTable } from "@/db/schema"
 
 // Create an ACK Lab SDK instance with the client ID and client secret for the Seller Agent in ACK Lab
-export const sdk = new AckLabSdk({
+export const agent = new AckLabAgent({
   clientId: process.env.ACK_LAB_CLIENT_ID!,
-  clientSecret: process.env.ACK_LAB_CLIENT_SECRET!
+  clientSecret: process.env.ACK_LAB_CLIENT_SECRET!,
+  agentId: process.env.ACK_LAB_AGENT_ID!
 })
 
 const requestSchema = v.object({ receipt: v.optional(v.string()) })
@@ -32,7 +33,7 @@ export async function POST(req: Request) {
     console.log("Received a receipt from the buyer")
 
     // verify the receipt is valid
-    const { paymentRequestId } = await sdk.verifyPaymentReceipt(receipt)
+    const { paymentRequestId } = await agent.verifyPaymentReceipt(receipt)
 
     // check to see if we ever made a PRT for this receipt
     const prt = await getDbPaymentRequest(paymentRequestId)
@@ -60,7 +61,7 @@ export async function POST(req: Request) {
       .returning()
 
     // Now create the payment request itself using the ACK Lab SDK
-    const { paymentRequestToken } = await sdk.createPaymentRequest({
+    const { paymentRequestToken } = await agent.createPaymentRequest({
       amount: productPrice,
       currencyCode: "USD",
       description: "Test payment request",

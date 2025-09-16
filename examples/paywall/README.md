@@ -47,46 +47,46 @@ Each endpoint can be tested using corresponding buyer scripts from the `../buyer
 
 The most basic ACK Lab SDK implementation - handles both payment requests and product delivery in a single endpoint.
 
-**How it works**: Direct HTTP POST requests without agent communication
-**Pattern**: Fixed-price digital product sales
-**Buyer script**: `cd ../buyer && pnpm run buy-fixed-price`
-**Details**: [Fixed-Price README](app/api/fixed-price/README.md)
+- **How it works**: Direct HTTP POST requests without agent communication
+- **Pattern**: Fixed-price digital product sales
+- **Buyer script**: `cd ../buyer && pnpm run buy-fixed-price`
+- **Details**: [Fixed-Price README](app/api/fixed-price/README.md)
 
 ### `/api/chat/fixed-price` - Conversational Fixed-Price Sales
 
 Demonstrates secure agent-to-agent communication for selling research at a fixed price.
 
-**How it works**: Uses ACK Lab's secure messaging with structured schemas
-**Pattern**: Conversational commerce with agent communication
-**Buyer script**: `cd ../buyer && pnpm run buy-chat-fixed-price`
-**Details**: [Fixed-Price Chat README](app/api/chat/fixed-price/README.md)
+- **How it works**: Uses ACK Lab's secure messaging with structured schemas
+- **Pattern**: Conversational commerce with agent communication
+- **Buyer script**: `cd ../buyer && pnpm run buy-chat-fixed-price`
+- **Details**: [Fixed-Price Chat README](app/api/chat/fixed-price/README.md)
 
 ### `/api/chat/negotiate` - AI-Powered Price Negotiation
 
 Shows autonomous AI agents negotiating prices within business constraints using GPT-4o.
 
-**How it works**: LLM-driven negotiation with autonomous payment request creation
-**Pattern**: AI-vs-AI price negotiation with business rules
-**Buyer script**: `cd ../buyer && pnpm run negotiate`
-**Details**: [Negotiation Chat README](app/api/chat/negotiate/README.md)
+- **How it works**: LLM-driven negotiation with autonomous payment request creation
+- **Pattern**: AI-vs-AI price negotiation with business rules
+- **Buyer script**: `cd ../buyer && pnpm run negotiate`
+- **Details**: [Negotiation Chat README](app/api/chat/negotiate/README.md)
 
 ### `/api/images/buy` - Credit-Based Purchasing
 
 Implements bulk credit purchasing where buyers pre-pay for image generation rights.
 
-**How it works**: Variable quantity purchasing with metadata tracking
-**Pattern**: Credit-based commerce with bulk purchasing
-**Buyer script**: `cd ../buyer && pnpm run images` (uses both buy and generate)
-**Details**: [Image Credits Purchase README](app/api/images/buy/README.md)
+- **How it works**: Variable quantity purchasing with metadata tracking
+- **Pattern**: Credit-based commerce with bulk purchasing
+- **Buyer script**: `cd ../buyer && pnpm run images` (uses both buy and generate)
+- **Details**: [Image Credits Purchase README](app/api/images/buy/README.md)
 
 ### `/api/images/generate` - Credit Consumption Service
 
 Consumes purchased credits to generate AI images using DALL-E 3, with usage tracking.
 
-**How it works**: Credit validation, AI image generation, and credit consumption
-**Pattern**: Pay-per-use service with credit tracking
-**Buyer script**: `cd ../buyer && pnpm run images` (uses both buy and generate)
-**Details**: [Image Generation README](app/api/images/generate/README.md)
+- **How it works**: Credit validation, AI image generation, and credit consumption
+- **Pattern**: Pay-per-use service with credit tracking
+- **Buyer script**: `cd ../buyer && pnpm run images` (uses both buy and generate)
+- **Details**: [Image Generation README](app/api/images/generate/README.md)
 
 ## Prerequisites
 
@@ -134,7 +134,7 @@ All endpoints store payment requests in the database before creating ACK Lab pay
 // Store first
 const prt = await db.insert(paymentRequestsTable).values({...}).returning()
 // Then create with ACK Lab
-const { paymentRequestToken } = await sdk.createPaymentRequest({id: prt[0].id})
+const { paymentRequestToken } = await agent.createPaymentRequest({id: prt[0].id})
 ```
 
 ### Receipt Validation
@@ -143,7 +143,7 @@ Two-step verification ensures security:
 
 ```typescript
 // 1. Cryptographic verification
-const { paymentRequestId } = await sdk.verifyPaymentReceipt(receipt)
+const { paymentRequestId } = await agent.verifyPaymentReceipt(receipt)
 // 2. Database verification
 const prt = await getDbPaymentRequest(paymentRequestId)
 ```
@@ -153,7 +153,7 @@ const prt = await getDbPaymentRequest(paymentRequestId)
 Chat endpoints use structured messaging:
 
 ```typescript
-export const handler = sdk.createRequestHandler(inputSchema, processMessage)
+export const handler = agent.createRequestHandler(inputSchema, processMessage)
 ```
 
 ## Security Features

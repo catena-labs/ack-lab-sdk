@@ -53,7 +53,7 @@ export class HandshakeClient {
    * @returns Object containing the response JWT to send back
    * @example
    * ```ts
-   * const response = await sdk.handleHandshakeInit(initJwt)
+   * const response = await client.handleHandshakeInit(initJwt)
    * // => { jwt: JwtString<VerifiablePresentation> }
    * ```
    */
@@ -80,7 +80,7 @@ export class HandshakeClient {
    * @returns Object containing the continuation JWT and counterparty DID
    * @example
    * ```ts
-   * const continuation = await sdk.handleHandshakeResponse(responseJwt)
+   * const continuation = await client.handleHandshakeResponse(responseJwt)
    * // => { jwt: JwtString<VerifiablePresentation>, counterpartyDid: "did:web:agentB" }
    * ```
    */
@@ -116,7 +116,7 @@ export class HandshakeClient {
    * @returns Object containing the completion JWT and counterparty DID
    * @example
    * ```ts
-   * const completion = await sdk.finalizeHandshake(continuationJwt)
+   * const completion = await client.finalizeHandshake(continuationJwt)
    * // => { counterpartyDid: "did:web:agentA", jwt: JwtString<{type: "handshake-complete"}> }
    * ```
    */
@@ -146,7 +146,7 @@ export class HandshakeClient {
    * @returns Object containing the verified payload and counterparty DID
    * @example
    * ```ts
-   * const result = await sdk.verifyHandshakeComplete(completionJwt)
+   * const result = await client.verifyHandshakeComplete(completionJwt)
    * // => { payload: JwtPayload, counterpartyDid: "did:web:agentB" }
    * ```
    */
@@ -188,9 +188,9 @@ export class HandshakeClient {
    * @returns The classified request type
    * @example
    * ```ts
-   * const type = sdk.getRequestType(incomingJwt)
+   * const type = client.getRequestType(incomingJwt)
    * if (type === "handshake-init") {
-   *   await sdk.handleHandshakeInit(incomingJwt)
+   *   await client.handleHandshakeInit(incomingJwt)
    * }
    * ```
    */

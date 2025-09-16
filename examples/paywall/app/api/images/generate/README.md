@@ -46,7 +46,7 @@ The receipt undergoes cryptographic verification to ensure authenticity:
 
 ```typescript
 //check the Receipt JWT is valid
-const { paymentRequestId } = await sdk.verifyPaymentReceipt(receiptJwt)
+const { paymentRequestId } = await agent.verifyPaymentReceipt(receiptJwt)
 
 if (!paymentRequestId) {
   return new Response("Invalid receipt", { status: 400 })
@@ -55,7 +55,7 @@ if (!paymentRequestId) {
 
 **Why we do this:**
 
-- `sdk.verifyPaymentReceipt()` cryptographically validates the receipt hasn't been tampered with
+- `agent.verifyPaymentReceipt()` cryptographically validates the receipt hasn't been tampered with
 - It extracts the `paymentRequestId` that links back to the original purchase
 - Invalid receipts are rejected immediately, preventing unauthorized access
 

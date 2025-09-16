@@ -11,7 +11,8 @@ async function main() {
 
   const agent = new NegotiatingBuyerAgent({
     clientId: process.env.ACK_LAB_CLIENT_ID!,
-    clientSecret: process.env.ACK_LAB_CLIENT_SECRET!
+    clientSecret: process.env.ACK_LAB_CLIENT_SECRET!,
+    agentId: process.env.ACK_LAB_AGENT_ID!
   })
 
   const research = await agent.purchaseResearch(name)

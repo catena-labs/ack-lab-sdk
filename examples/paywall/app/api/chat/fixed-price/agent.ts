@@ -2,7 +2,7 @@
  * Simplified example code for ACK Lab Developer Preview use only. For use in test environment only.
  * Use with value bearing assets or outside the test environment may result in permanent loss of value.
  */
-import { AckLabSdk } from "@ack-lab/sdk"
+import { AckLabAgent } from "@ack-lab/sdk"
 import * as v from "valibot"
 import { getDbPaymentRequest } from "@/db/queries/payment-requests"
 import { db } from "@/db"
@@ -34,9 +34,10 @@ const _outputSchema = v.object({
 
 type Output = v.InferOutput<typeof _outputSchema>
 
-export const sdk = new AckLabSdk({
+export const agent = new AckLabAgent({
   clientId: process.env.ACK_LAB_CLIENT_ID!,
-  clientSecret: process.env.ACK_LAB_CLIENT_SECRET!
+  clientSecret: process.env.ACK_LAB_CLIENT_SECRET!,
+  agentId: process.env.ACK_LAB_AGENT_ID!
 })
 
 export async function processMessage({ receipt }: Input): Promise<Output> {
@@ -45,7 +46,7 @@ export async function processMessage({ receipt }: Input): Promise<Output> {
     console.log(receipt)
 
     //verify the receipt is valid
-    const { paymentRequestId } = await sdk.verifyPaymentReceipt(receipt)
+    const { paymentRequestId } = await agent.verifyPaymentReceipt(receipt)
 
     //check to see if we ever made a PRT for this receipt
     const prt = await getDbPaymentRequest(paymentRequestId)
@@ -75,7 +76,7 @@ export async function processMessage({ receipt }: Input): Promise<Output> {
       .returning()
 
     //now create the payment request itself using the ACK Lab SDK
-    const { paymentRequestToken } = await sdk.createPaymentRequest({
+    const { paymentRequestToken } = await agent.createPaymentRequest({
       description: `Purchase ${product.title}`,
       amount: product.price,
       currencyCode: "USD",
@@ -91,4 +92,4 @@ export async function processMessage({ receipt }: Input): Promise<Output> {
 
 // Create an agent handler that will process incoming messages
 // This uses the ACK Lab SDK to provide a secure communication channel between the buyer and the seller
-export const handler = sdk.createRequestHandler(inputSchema, processMessage)
+export const handler = agent.createRequestHandler(inputSchema, processMessage)

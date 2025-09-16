@@ -46,7 +46,7 @@ After storing our record, we create the actual payment request with ACK Lab:
 
 ```typescript
 //now create the payment request itself using the ACK Lab SDK
-const { paymentRequestToken } = await sdk.createPaymentRequest({
+const { paymentRequestToken } = await agent.createPaymentRequest({
   amount: price,
   currencyCode: "USD",
   description: `Purchase of ${count} image generation credits`,
@@ -106,7 +106,7 @@ The buyer script (`buyer/scripts/images.ts`) demonstrates the full workflow:
 1. Makes POST request to `/api/images/buy` requesting 3 credits
 2. Receives 402 status with Payment Request Token for $3
 3. Validates the PRT amount matches expected price ($1 per credit)
-4. Executes payment using `sdk.executePayment()`
+4. Executes payment using `agent.executePayment()`
 5. Uses the receipt to generate 2 random president images at `/api/images/generate`
 6. Saves images locally, leaving 1 credit remaining on the receipt
 

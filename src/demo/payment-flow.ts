@@ -1,15 +1,17 @@
 import colors from "yoctocolors"
-import { AckLabSdk } from "../sdk"
+import { AckLabAgent } from "../agent"
 
 async function main() {
-  const sellerClient = new AckLabSdk({
+  const sellerClient = new AckLabAgent({
     clientId: "<client-id>",
-    clientSecret: "<client-secret>"
+    clientSecret: "<client-secret>",
+    agentId: "<seller-agent-id>"
   })
 
-  const buyerClient = new AckLabSdk({
+  const buyerClient = new AckLabAgent({
     clientId: "<client-id>",
-    clientSecret: "<client-secret>"
+    clientSecret: "<client-secret>",
+    agentId: "<buyer-agent-id>"
   })
 
   const { paymentRequestToken } = await sellerClient.createPaymentRequest({

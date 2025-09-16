@@ -3,14 +3,15 @@
  * Use with value bearing assets or outside the test environment may result in permanent loss of value.
  */
 import { config } from "dotenv"
-import { AckLabSdk } from "@ack-lab/sdk"
+import { AckLabAgent } from "@ack-lab/sdk"
 import { verifyPaymentRequestToken, getDidResolver } from "agentcommercekit"
 
 config()
 
-const sdk = new AckLabSdk({
+const agent = new AckLabAgent({
   clientId: process.env.ACK_LAB_CLIENT_ID!,
-  clientSecret: process.env.ACK_LAB_CLIENT_SECRET!
+  clientSecret: process.env.ACK_LAB_CLIENT_SECRET!,
+  agentId: process.env.ACK_LAB_AGENT_ID!
 })
 
 const endpoint = `${process.env.PAYWALL_HOST}/api/fixed-price`
@@ -47,7 +48,7 @@ async function main() {
   }
 
   console.log("\n\nExecuting payment...")
-  const { receipt } = await sdk.executePayment(paymentRequestToken)
+  const { receipt } = await agent.executePayment(paymentRequestToken)
 
   console.log("Payment made, sending receipt to seller...")
   console.log(receipt)
