@@ -1,6 +1,6 @@
 {
   "name": "@ack-lab/sdk",
-  "version": "0.0.7",
+  "version": "0.1.0",
   "description": "Ack Lab SDK",
   "homepage": "https://github.com/catena-labs/ack-lab-sdk#readme",
   "bugs": "https://github.com/catena-labs/ack-lab-sdk/issues",
