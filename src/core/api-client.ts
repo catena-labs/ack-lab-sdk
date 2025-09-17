@@ -61,7 +61,7 @@ export class ApiClient {
     }
 
     const metadata = await this.request(
-      { method: "GET", path: "/v1/metadata" },
+      { method: "GET", path: this.agentPath("metadata") },
       agentMetadataSchema
     )
 
