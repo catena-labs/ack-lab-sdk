@@ -27,7 +27,7 @@ const agent = new AckLabAgent({
 })
 
 // Generate a request for our agent to get paid
-const paymentRequest = await agent.createPaymentRequest({
+const { paymentRequestToken, url } = await agent.createPaymentRequest({
   id: crypto.randomUUID(),
   amount: 100,
   currencyCode: "USD",
@@ -89,7 +89,7 @@ The ACK Lab SDK offers a collection of agent-centric actions that can be perform
 An Agent can generate a payment request token that can be sent to another agent:
 
 ```ts
-const paymentRequest = await agent.createPaymentRequest({
+const { paymentRequestToken, url } = await agent.createPaymentRequest({
   id: crypto.randomUUID(),
   amount: 100,
   currencyCode: "USD",
@@ -217,7 +217,7 @@ The schema parameter accepts any [Standard Schema](https://standardschema.dev/) 
 ### createPaymentRequest(params: { id?: string, amount: number, currencyCode?: string, description?: string })
 
 ```ts
-const paymentRequest = await agent.createPaymentRequest({
+const { paymentRequestToken, url } = await agent.createPaymentRequest({
   id: crypto.randomUUID(),
   amount: 100,
   currencyCode: "USD",
