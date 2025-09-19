@@ -307,7 +307,8 @@ export class AckLabAgent {
    * @param params.amount - The amount to request in minor units (e.g. 1000 for $10 in USD)
    * @param params.currencyCode - The currency code to request (e.g. "USD")
    * @param params.description - Optional description of the payment request
-   * @returns Promise resolving to the payment request token
+   * @returns Promise resolving to an object with paymentRequestToken (string) and
+   * optional url (string, expires after 1 day) that resolves to the JWT token.
    */
   async createPaymentRequest(params: {
     id?: string
@@ -323,7 +324,8 @@ export class AckLabAgent {
    * via a payment request token.
    *
    * @param paymentRequestToken - The signed payment request token to pay
-   * @returns Promise resolving to the payment result
+   * @returns Promise resolving to an object with receipt (JwtString) and optional
+   * url (string, expires after 1 day) that resolves to the JWT receipt.
    */
   async executePayment(paymentRequestToken: string) {
     return this.apiClient.executePayment(paymentRequestToken)
